@@ -1,3 +1,13 @@
+# Power Snitch Configuration Example
+# ================================
+# This is an example configuration file for Power Snitch.
+# Copy this file to config.yaml and modify the settings as needed.
+
+# Web Interface Settings
+web_interface:
+  port: 8080  # Port for the web interface
+  password: "$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj1ZxQQxq5re"  # bcrypt hashed password
+
 # UPS Configuration
 ups:
   name: "ups"  # Name in ups.conf
@@ -5,14 +15,18 @@ ups:
 
 # Notification Settings
 notifications:
+  enabled_services: []  # List of enabled notification services (webhook, email, sms)
+  
   # Webhook Configuration
   webhook:
-    enabled: true
-    url: "https://your-webhook-endpoint.com/power-notifications"
+    enabled: false
+    url: "https://your-webhook-url.com/endpoint"
+    method: "POST"
+    timeout: 10
     headers:
       X-API-Key: "your-api-key-here"
       Authorization: "Bearer your-token-here"
-
+  
   # Email Configuration
   email:
     enabled: false
@@ -23,18 +37,17 @@ notifications:
       password: "your-app-specific-password"
       use_tls: true
     recipients:
-      - "recipient1@example.com"
-      - "recipient2@example.com"
-
+      - "recipient@example.com"
+  
   # SMS Configuration (via Twilio)
   sms:
     enabled: false
     twilio:
       account_sid: "your-twilio-account-sid"
       auth_token: "your-twilio-auth-token"
-      from_number: "+1234567890"  # Your Twilio phone number
+      from_number: "+1234567890"
     recipients:
-      - "+1987654321"  # List of phone numbers to notify
+      - "+1987654321"
 
 # Notification Triggers
 triggers:

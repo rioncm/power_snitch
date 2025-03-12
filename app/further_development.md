@@ -1,0 +1,3 @@
+- Switch settings to sql lite
+- Add heartbeat notification
+- Add Battery status notification 
