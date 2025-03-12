@@ -1,0 +1,46 @@
+# UPS Configuration
+ups:
+  name: "ups"  # Name in ups.conf
+  poll_interval: 5  # seconds between checks
+
+# Notification Settings
+notifications:
+  # Webhook Configuration
+  webhook:
+    enabled: true
+    url: "https://your-webhook-endpoint.com/power-notifications"
+    headers:
+      X-API-Key: "your-api-key-here"
+      Authorization: "Bearer your-token-here"
+
+  # Email Configuration
+  email:
+    enabled: false
+    smtp:
+      host: "smtp.gmail.com"
+      port: 587
+      username: "your-email@gmail.com"
+      password: "your-app-specific-password"
+      use_tls: true
+    recipients:
+      - "recipient1@example.com"
+      - "recipient2@example.com"
+
+  # SMS Configuration (via Twilio)
+  sms:
+    enabled: false
+    twilio:
+      account_sid: "your-twilio-account-sid"
+      auth_token: "your-twilio-auth-token"
+      from_number: "+1234567890"  # Your Twilio phone number
+    recipients:
+      - "+1987654321"  # List of phone numbers to notify
+
+# Notification Triggers
+triggers:
+  battery_level_change: 5  # Notify on 5% battery level change
+  load_change: 5  # Notify on 5% load change
+  always_notify:
+    - power_failure  # Always notify on power failure
+    - power_restored  # Always notify on power restored
+    - low_battery    # Always notify on low battery (below 20%) 

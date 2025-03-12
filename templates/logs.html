@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Logs{% endblock %}
+
+{% block extra_css %}
+<style>
+.log-container {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    font-family: monospace;
+    padding: 1rem;
+    border-radius: 4px;
+    height: 600px;
+    overflow-y: auto;
+}
+
+.log-entry {
+    margin: 0;
+    padding: 2px 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.log-entry.error { color: #f14c4c; }
+.log-entry.warning { color: #cca700; }
+.log-entry.info { color: #3794ff; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">System Logs</h4>
+        <div>
+            <button class="btn btn-secondary" id="refresh-logs">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+            <button class="btn btn-primary" id="download-logs">
+                <i class="fas fa-download"></i> Download
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="log-container" id="log-viewer">
+            {% for log in logs %}
+                <pre class="log-entry {% if 'ERROR' in log %}error{% elif 'WARNING' in log %}warning{% else %}info{% endif %}">{{ log }}</pre>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const logViewer = document.getElementById('log-viewer');
+    
+    // Auto-scroll to bottom
+    logViewer.scrollTop = logViewer.scrollHeight;
+
+    // Refresh logs
+    document.getElementById('refresh-logs').addEventListener('click', function() {
+        window.location.reload();
+    });
+
+    // Download logs
+    document.getElementById('download-logs').addEventListener('click', function() {
+        const logs = Array.from(document.querySelectorAll('.log-entry'))
+            .map(entry => entry.textContent)
+            .join('\n');
+        
+        const blob = new Blob([logs], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `power_snitch_logs_${new Date().toISOString().split('T')[0]}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+    });
+});
+</script>
+{% endblock %} 
