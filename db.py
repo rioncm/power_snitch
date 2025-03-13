@@ -8,6 +8,8 @@ import os
 from datetime import datetime
 from sqlalchemy import create_engine, Column, Integer, String, Boolean, Float, DateTime, ForeignKey, Time, Text, func
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
+import json
+import logging
 
 # Create base class for declarative models
 Base = declarative_base()
@@ -30,6 +32,14 @@ class UPSConfig(Base):
     name = Column(String, nullable=False)
     description = Column(String)
     poll_interval = Column(Integer, nullable=False, default=5)
+    # NUT-specific fields
+    nut_device_name = Column(String, nullable=False, default='ups')
+    nut_driver = Column(String, nullable=False, default='usbhid-ups')
+    nut_port = Column(String)
+    nut_username = Column(String, nullable=False, default='admin')
+    nut_password = Column(String, nullable=False)
+    nut_retry_count = Column(Integer, default=3)
+    nut_retry_delay = Column(Integer, default=5)
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
 
@@ -284,7 +294,10 @@ class Database:
         finally:
             session.close()
     
-    def update_ups_config(self, name=None, description=None, poll_interval=None):
+    def update_ups_config(self, name=None, description=None, poll_interval=None, 
+                         nut_device_name=None, nut_driver=None, nut_port=None,
+                         nut_username=None, nut_password=None, nut_retry_count=None,
+                         nut_retry_delay=None):
         """Update UPS configuration."""
         session = self.get_session()
         try:
@@ -296,6 +309,35 @@ class Database:
                     ups_config.description = description
                 if poll_interval is not None:
                     ups_config.poll_interval = poll_interval
+                if nut_device_name is not None:
+                    ups_config.nut_device_name = nut_device_name
+                if nut_driver is not None:
+                    ups_config.nut_driver = nut_driver
+                if nut_port is not None:
+                    ups_config.nut_port = nut_port
+                if nut_username is not None:
+                    ups_config.nut_username = nut_username
+                if nut_password is not None:
+                    ups_config.nut_password = nut_password
+                if nut_retry_count is not None:
+                    ups_config.nut_retry_count = nut_retry_count
+                if nut_retry_delay is not None:
+                    ups_config.nut_retry_delay = nut_retry_delay
+                session.commit()
+            else:
+                ups_config = UPSConfig(
+                    name=name or 'UPS',
+                    description=description,
+                    poll_interval=poll_interval or 5,
+                    nut_device_name=nut_device_name or 'ups',
+                    nut_driver=nut_driver or 'usbhid-ups',
+                    nut_port=nut_port,
+                    nut_username=nut_username or 'admin',
+                    nut_password=nut_password or '',
+                    nut_retry_count=nut_retry_count or 3,
+                    nut_retry_delay=nut_retry_delay or 5
+                )
+                session.add(ups_config)
                 session.commit()
         finally:
             session.close()
@@ -324,11 +366,37 @@ class Database:
                     if hasattr(config, key):
                         setattr(config, key, value)
                 session.commit()
+            else:
+                config = BatteryHealthConfig(**kwargs)
+                session.add(config)
+                session.commit()
+        finally:
+            session.close()
+    
+    def get_battery_health_history(self, limit=24):
+        """Get recent battery health history records."""
+        session = self.get_session()
+        try:
+            return session.query(BatteryHealthHistory)\
+                .order_by(BatteryHealthHistory.timestamp.desc())\
+                .limit(limit)\
+                .all()
+        finally:
+            session.close()
+    
+    def get_recent_alerts(self, limit=10):
+        """Get recent battery alerts."""
+        session = self.get_session()
+        try:
+            return session.query(BatteryAlert)\
+                .order_by(BatteryAlert.timestamp.desc())\
+                .limit(limit)\
+                .all()
         finally:
             session.close()
     
     def add_battery_health_history(self, **kwargs):
-        """Add battery health history record."""
+        """Add a new battery health history record."""
         session = self.get_session()
         try:
             history = BatteryHealthHistory(**kwargs)
@@ -338,7 +406,7 @@ class Database:
             session.close()
     
     def add_battery_alert(self, alert_type, value, threshold):
-        """Add battery alert."""
+        """Add a new battery alert."""
         session = self.get_session()
         try:
             alert = BatteryAlert(
@@ -368,32 +436,51 @@ class Database:
         session = self.get_session()
         try:
             service = session.query(NotificationService).filter_by(service_type=service_type).first()
-            if service:
-                if enabled is not None:
-                    service.enabled = enabled
-                session.commit()
-                
-                # Update specific service configuration
-                if service_type == 'webhook' and 'webhook_config' in kwargs:
-                    webhook_config = service.webhook_config
-                    if webhook_config:
-                        for key, value in kwargs['webhook_config'].items():
-                            setattr(webhook_config, key, value)
-                        session.commit()
-                
-                elif service_type == 'email' and 'email_config' in kwargs:
-                    email_config = service.email_config
-                    if email_config:
-                        for key, value in kwargs['email_config'].items():
-                            setattr(email_config, key, value)
-                        session.commit()
-                
-                elif service_type == 'sms' and 'sms_config' in kwargs:
-                    sms_config = service.sms_config
-                    if sms_config:
-                        for key, value in kwargs['sms_config'].items():
-                            setattr(sms_config, key, value)
-                        session.commit()
+            if not service:
+                service = NotificationService(service_type=service_type)
+                session.add(service)
+            
+            if enabled is not None:
+                service.enabled = enabled
+            
+            if service_type == 'webhook':
+                if 'webhook_config' in kwargs:
+                    config = service.webhook_config or WebhookConfig()
+                    for key, value in kwargs['webhook_config'].items():
+                        if key == 'headers' and value:
+                            try:
+                                if isinstance(value, str):
+                                    value = json.loads(value)
+                                config.headers = json.dumps(value)
+                            except json.JSONDecodeError:
+                                raise ValueError("Invalid JSON format for headers")
+                        else:
+                            setattr(config, key, value)
+                    service.webhook_config = config
+            
+            elif service_type == 'email':
+                if 'email_config' in kwargs:
+                    config = service.email_config or EmailConfig()
+                    for key, value in kwargs['email_config'].items():
+                        if key == 'smtp_password' and not value:
+                            continue  # Skip empty password updates
+                        setattr(config, key, value)
+                    service.email_config = config
+            
+            elif service_type == 'sms':
+                if 'sms_config' in kwargs:
+                    config = service.sms_config or SMSConfig()
+                    for key, value in kwargs['sms_config'].items():
+                        if key == 'auth_token' and not value:
+                            continue  # Skip empty token updates
+                        setattr(config, key, value)
+                    service.sms_config = config
+            
+            session.commit()
+        except Exception as e:
+            session.rollback()
+            logging.error(f"Error updating notification service: {str(e)}")
+            raise
         finally:
             session.close()
     
@@ -403,5 +490,69 @@ class Database:
         try:
             web_interface = session.query(WebInterface).first()
             return web_interface and web_interface.setup_completed
+        finally:
+            session.close()
+
+    def get_webhook_config(self):
+        """Get webhook notification configuration."""
+        session = self.get_session()
+        try:
+            service = session.query(NotificationService).filter_by(service_type='webhook').first()
+            return service.webhook_config if service else None
+        finally:
+            session.close()
+
+    def get_email_config(self):
+        """Get email notification configuration."""
+        session = self.get_session()
+        try:
+            service = session.query(NotificationService).filter_by(service_type='email').first()
+            return service.email_config if service else None
+        finally:
+            session.close()
+
+    def get_sms_config(self):
+        """Get SMS notification configuration."""
+        session = self.get_session()
+        try:
+            service = session.query(NotificationService).filter_by(service_type='sms').first()
+            return service.sms_config if service else None
+        finally:
+            session.close()
+
+    def update_webhook_config(self, url, method='POST', timeout=30, headers=None):
+        """Update webhook configuration."""
+        session = self.get_session()
+        try:
+            service = session.query(NotificationService).filter_by(service_type='webhook').first()
+            if not service:
+                service = NotificationService(service_type='webhook')
+                session.add(service)
+            
+            if not service.webhook_config:
+                service.webhook_config = WebhookConfig()
+            
+            service.enabled = True
+            service.webhook_config.url = url
+            service.webhook_config.method = method
+            service.webhook_config.timeout = timeout
+            
+            # Handle headers JSON serialization
+            if headers is not None:
+                if isinstance(headers, str):
+                    try:
+                        # If headers is a JSON string, parse it
+                        headers = json.loads(headers)
+                    except json.JSONDecodeError:
+                        raise ValueError("Invalid JSON format for headers")
+                service.webhook_config.headers = json.dumps(headers)
+            else:
+                service.webhook_config.headers = None
+            
+            session.commit()
+        except Exception as e:
+            session.rollback()
+            logging.error(f"Error updating webhook config: {str(e)}")
+            raise
         finally:
             session.close() 

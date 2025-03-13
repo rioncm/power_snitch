@@ -1,172 +1,462 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Power Snitch - Settings</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
-    <div class="settings-container">
-        <nav class="navbar">
-            <h1>Power Snitch</h1>
-            <div class="nav-links">
-                <a href="{{ url_for('index') }}">Dashboard</a>
-                <a href="{{ url_for('settings') }}" class="active">Settings</a>
-                <a href="{{ url_for('logout') }}">Logout</a>
+{% extends "base.html" %}
+
+{% block title %}Power Snitch - Settings{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">Settings</h1>
+            
+            <!-- Web Interface Settings -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Web Interface</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('settings') }}" id="web-interface-form">
+                        <div class="mb-3">
+                            <label for="web_interface.port" class="form-label">Port</label>
+                            <input type="number" class="form-control" id="web_interface.port" name="web_interface.port" 
+                                   value="{{ config.web_interface.port }}" required min="1" max="65535">
+                        </div>
+                        <div class="mb-3">
+                            <label for="web_interface.password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="web_interface.password" name="web_interface.password" 
+                                   placeholder="Leave blank to keep current password">
+                            <div id="password-strength" class="mt-2"></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Web Interface Settings</button>
+                    </form>
+                </div>
             </div>
-        </nav>
 
-        <div class="main-content">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ category }}">{{ message }}</div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-
-            <form method="POST" action="{{ url_for('settings') }}">
-                <!-- Web Interface Settings -->
-                <div class="settings-section">
-                    <h2>Web Interface</h2>
-                    <div class="form-group">
-                        <label for="web_port">Port</label>
-                        <input type="number" id="web_port" name="web_interface[port]" value="{{ config.web_interface.port }}" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="web_password">Password (leave blank to keep current)</label>
-                        <input type="password" id="web_password" name="web_interface[password]">
-                    </div>
+            <!-- UPS Configuration -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">UPS Configuration</h5>
                 </div>
-
-                <!-- UPS Settings -->
-                <div class="settings-section">
-                    <h2>UPS Configuration</h2>
-                    <div class="form-group">
-                        <label for="ups_name">UPS Name</label>
-                        <input type="text" id="ups_name" name="ups[name]" value="{{ config.ups.name }}" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="ups_description">Description</label>
-                        <input type="text" id="ups_description" name="ups[description]" value="{{ config.ups.description }}">
-                    </div>
-                    <div class="form-group">
-                        <label for="ups_poll_interval">Poll Interval (seconds)</label>
-                        <input type="number" id="ups_poll_interval" name="ups[poll_interval]" value="{{ config.ups.poll_interval }}" required>
-                    </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('settings') }}" id="ups-config-form">
+                        <div class="mb-3">
+                            <label for="ups.name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="ups.name" name="ups.name" 
+                                   value="{{ config.ups.name }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ups.description" class="form-label">Description</label>
+                            <textarea class="form-control" id="ups.description" name="ups.description">{{ config.ups.description }}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ups.poll_interval" class="form-label">Poll Interval (seconds)</label>
+                            <input type="number" class="form-control" id="ups.poll_interval" name="ups.poll_interval" 
+                                   value="{{ config.ups.poll_interval }}" required min="5">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save UPS Configuration</button>
+                    </form>
                 </div>
+            </div>
 
-                <!-- Notification Settings -->
-                <div class="settings-section">
-                    <h2>Notifications</h2>
-                    
-                    <!-- Webhook -->
-                    <div class="notification-group">
-                        <h3>Webhook</h3>
-                        <div class="form-group">
-                            <label>
-                                <input type="checkbox" name="notifications[webhook][enabled]" {% if config.notifications.webhook.enabled %}checked{% endif %}>
-                                Enable Webhook
-                            </label>
-                        </div>
-                        <div class="webhook-settings" {% if not config.notifications.webhook.enabled %}style="display: none;"{% endif %}>
-                            <div class="form-group">
-                                <label for="webhook_url">URL</label>
-                                <input type="url" id="webhook_url" name="notifications[webhook][url]" value="{{ config.notifications.webhook.url }}">
-                            </div>
-                            <div class="form-group">
-                                <label for="webhook_method">Method</label>
-                                <select id="webhook_method" name="notifications[webhook][method]">
-                                    <option value="POST" {% if config.notifications.webhook.method == 'POST' %}selected{% endif %}>POST</option>
-                                    <option value="GET" {% if config.notifications.webhook.method == 'GET' %}selected{% endif %}>GET</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="webhook_timeout">Timeout (seconds)</label>
-                                <input type="number" id="webhook_timeout" name="notifications[webhook][timeout]" value="{{ config.notifications.webhook.timeout }}">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Email -->
-                    <div class="notification-group">
-                        <h3>Email</h3>
-                        <div class="form-group">
-                            <label>
-                                <input type="checkbox" name="notifications[email][enabled]" {% if config.notifications.email.enabled %}checked{% endif %}>
-                                Enable Email
-                            </label>
-                        </div>
-                        <div class="email-settings" {% if not config.notifications.email.enabled %}style="display: none;"{% endif %}>
-                            <div class="form-group">
-                                <label for="smtp_host">SMTP Host</label>
-                                <input type="text" id="smtp_host" name="notifications[email][smtp][host]" value="{{ config.notifications.email.smtp_host }}">
-                            </div>
-                            <div class="form-group">
-                                <label for="smtp_port">SMTP Port</label>
-                                <input type="number" id="smtp_port" name="notifications[email][smtp][port]" value="{{ config.notifications.email.smtp_port }}">
-                            </div>
-                            <div class="form-group">
-                                <label for="smtp_username">SMTP Username</label>
-                                <input type="text" id="smtp_username" name="notifications[email][smtp][username]" value="{{ config.notifications.email.smtp_username }}">
-                            </div>
-                            <div class="form-group">
-                                <label for="smtp_password">SMTP Password</label>
-                                <input type="password" id="smtp_password" name="notifications[email][smtp][password]">
-                            </div>
-                            <div class="form-group">
-                                <label>
-                                    <input type="checkbox" name="notifications[email][smtp][use_tls]" {% if config.notifications.email.smtp_use_tls %}checked{% endif %}>
-                                    Use TLS
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- SMS -->
-                    <div class="notification-group">
-                        <h3>SMS (Twilio)</h3>
-                        <div class="form-group">
-                            <label>
-                                <input type="checkbox" name="notifications[sms][enabled]" {% if config.notifications.sms.enabled %}checked{% endif %}>
-                                Enable SMS
-                            </label>
-                        </div>
-                        <div class="sms-settings" {% if not config.notifications.sms.enabled %}style="display: none;"{% endif %}>
-                            <div class="form-group">
-                                <label for="twilio_account_sid">Account SID</label>
-                                <input type="text" id="twilio_account_sid" name="notifications[sms][twilio][account_sid]" value="{{ config.notifications.sms.account_sid }}">
-                            </div>
-                            <div class="form-group">
-                                <label for="twilio_auth_token">Auth Token</label>
-                                <input type="password" id="twilio_auth_token" name="notifications[sms][twilio][auth_token]">
-                            </div>
-                            <div class="form-group">
-                                <label for="twilio_from_number">From Number</label>
-                                <input type="text" id="twilio_from_number" name="notifications[sms][twilio][from_number]" value="{{ config.notifications.sms.from_number }}">
-                            </div>
-                        </div>
-                    </div>
+            <!-- NUT Configuration -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">NUT Configuration</h5>
                 </div>
-
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">Save Settings</button>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('settings') }}" id="nut-config-form">
+                        <div class="mb-3">
+                            <label for="ups.nut_device_name" class="form-label">Device Name</label>
+                            <input type="text" class="form-control" id="ups.nut_device_name" name="ups.nut_device_name" 
+                                   value="{{ config.ups.nut_device_name }}" required>
+                            <div class="form-text">Name of the UPS device in NUT configuration</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ups.nut_driver" class="form-label">Driver</label>
+                            <input type="text" class="form-control" id="ups.nut_driver" name="ups.nut_driver" 
+                                   value="{{ config.ups.nut_driver }}" required>
+                            <div class="form-text">NUT driver to use (e.g., usbhid-ups, blazer_ser)</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ups.nut_port" class="form-label">Port</label>
+                            <input type="text" class="form-control" id="ups.nut_port" name="ups.nut_port" 
+                                   value="{{ config.ups.nut_port }}" required>
+                            <div class="form-text">Device port (e.g., auto, /dev/ttyUSB0)</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ups.nut_username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="ups.nut_username" name="ups.nut_username" 
+                                   value="{{ config.ups.nut_username }}" required>
+                            <div class="form-text">NUT server username</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ups.nut_password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="ups.nut_password" name="ups.nut_password" 
+                                   placeholder="Leave blank to keep current password">
+                            <div class="form-text">NUT server password</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="ups.nut_retry_count" class="form-label">Retry Count</label>
+                                    <input type="number" class="form-control" id="ups.nut_retry_count" name="ups.nut_retry_count" 
+                                           value="{{ config.ups.nut_retry_count }}" required min="1" max="10">
+                                    <div class="form-text">Number of connection retries</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="ups.nut_retry_delay" class="form-label">Retry Delay (seconds)</label>
+                                    <input type="number" class="form-control" id="ups.nut_retry_delay" name="ups.nut_retry_delay" 
+                                           value="{{ config.ups.nut_retry_delay }}" required min="1" max="60">
+                                    <div class="form-text">Delay between connection retries</div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save NUT Configuration</button>
+                    </form>
                 </div>
-            </form>
+            </div>
+
+            <!-- Notification Settings -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Notification Settings</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('config') }}" id="notification-form">
+                        <!-- Webhook Settings -->
+                        <div class="form-section">
+                            <h6>Webhook Notifications</h6>
+                            <div class="form-check mb-2">
+                                <input type="checkbox" class="form-check-input" id="notifications.webhook.enabled" 
+                                       name="notifications.webhook.enabled" {% if config.notifications.webhook.enabled %}checked{% endif %}>
+                                <label class="form-check-label" for="notifications.webhook.enabled">Enable Webhook Notifications</label>
+                            </div>
+                            <div id="webhook-settings" style="display: {% if config.notifications.webhook.enabled %}block{% else %}none{% endif %}">
+                                <div class="mb-3">
+                                    <label for="notifications.webhook.url" class="form-label">Webhook URL</label>
+                                    <input type="url" class="form-control" id="notifications.webhook.url" name="notifications.webhook.url" 
+                                           value="{{ config.notifications.webhook.url }}">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Custom Headers</label>
+                                    <div id="webhook-headers">
+                                        {% for header in config.notifications.webhook.headers %}
+                                        <div class="header-row mb-2">
+                                            <input type="text" class="form-control" name="notifications.webhook.headers[{{ loop.index0 }}][key]" 
+                                                   value="{{ header.key }}" placeholder="Header name">
+                                            <input type="text" class="form-control" name="notifications.webhook.headers[{{ loop.index0 }}][value]" 
+                                                   value="{{ header.value }}" placeholder="Header value">
+                                            <button type="button" class="btn btn-danger" onclick="removeHeader(this)">Remove</button>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    <button type="button" class="btn btn-secondary" id="add-header">Add Header</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Email Settings -->
+                        <div class="form-section">
+                            <h6>Email Notifications</h6>
+                            <div class="form-check mb-2">
+                                <input type="checkbox" class="form-check-input" id="notifications.email.enabled" 
+                                       name="notifications.email.enabled" {% if config.notifications.email.enabled %}checked{% endif %}>
+                                <label class="form-check-label" for="notifications.email.enabled">Enable Email Notifications</label>
+                            </div>
+                            <div id="email-settings" style="display: {% if config.notifications.email.enabled %}block{% else %}none{% endif %}">
+                                <div class="mb-3">
+                                    <label for="notifications.email.smtp_host" class="form-label">SMTP Host</label>
+                                    <input type="text" class="form-control" id="notifications.email.smtp_host" name="notifications.email.smtp_host" 
+                                           value="{{ config.notifications.email.smtp_host }}">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="notifications.email.smtp_port" class="form-label">SMTP Port</label>
+                                    <input type="number" class="form-control" id="notifications.email.smtp_port" name="notifications.email.smtp_port" 
+                                           value="{{ config.notifications.email.smtp_port }}">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="notifications.email.username" class="form-label">Username</label>
+                                    <input type="text" class="form-control" id="notifications.email.username" name="notifications.email.username" 
+                                           value="{{ config.notifications.email.username }}">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="notifications.email.password" class="form-label">Password</label>
+                                    <input type="password" class="form-control" id="notifications.email.password" name="notifications.email.password" 
+                                           placeholder="Leave blank to keep current password">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="notifications.email.from_email" class="form-label">From Email</label>
+                                    <input type="email" class="form-control" id="notifications.email.from_email" name="notifications.email.from_email" 
+                                           value="{{ config.notifications.email.from_email }}">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="notifications.email.recipients" class="form-label">Recipients (comma-separated)</label>
+                                    <input type="text" class="form-control" id="notifications.email.recipients" name="notifications.email.recipients" 
+                                           value="{{ config.notifications.email.recipients }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SMS Settings -->
+                        <div class="form-section">
+                            <h6>SMS Notifications</h6>
+                            <div class="form-check mb-2">
+                                <input type="checkbox" class="form-check-input" id="notifications.sms.enabled" 
+                                       name="notifications.sms.enabled" {% if config.notifications.sms.enabled %}checked{% endif %}>
+                                <label class="form-check-label" for="notifications.sms.enabled">Enable SMS Notifications</label>
+                            </div>
+                            <div id="sms-settings" style="display: {% if config.notifications.sms.enabled %}block{% else %}none{% endif %}">
+                                <div class="mb-3">
+                                    <label for="notifications.sms.twilio_account_sid" class="form-label">Twilio Account SID</label>
+                                    <input type="text" class="form-control" id="notifications.sms.twilio_account_sid" 
+                                           name="notifications.sms.twilio_account_sid" value="{{ config.notifications.sms.twilio_account_sid }}">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="notifications.sms.twilio_auth_token" class="form-label">Twilio Auth Token</label>
+                                    <input type="password" class="form-control" id="notifications.sms.twilio_auth_token" 
+                                           name="notifications.sms.twilio_auth_token" placeholder="Leave blank to keep current token">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="notifications.sms.from_number" class="form-label">From Number</label>
+                                    <input type="text" class="form-control" id="notifications.sms.from_number" 
+                                           name="notifications.sms.from_number" value="{{ config.notifications.sms.from_number }}">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="notifications.sms.recipients" class="form-label">Recipients (comma-separated)</label>
+                                    <input type="text" class="form-control" id="notifications.sms.recipients" 
+                                           name="notifications.sms.recipients" value="{{ config.notifications.sms.recipients }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Save Notification Settings</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Notification Triggers -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Notification Triggers</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('config') }}" id="triggers-form">
+                        <div class="mb-3">
+                            <label for="triggers.battery_level_change" class="form-label">Battery Level Change Threshold (%)</label>
+                            <input type="number" class="form-control" id="triggers.battery_level_change" 
+                                   name="triggers.battery_level_change" value="{{ config.triggers.battery_level_change }}" 
+                                   min="0" max="100" step="0.1">
+                        </div>
+                        <div class="mb-3">
+                            <label for="triggers.load_change" class="form-label">Load Change Threshold (%)</label>
+                            <input type="number" class="form-control" id="triggers.load_change" 
+                                   name="triggers.load_change" value="{{ config.triggers.load_change }}" 
+                                   min="0" max="100" step="0.1">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Always Notify Events</label>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="triggers.always_notify.on_battery" 
+                                       name="triggers.always_notify.on_battery" {% if config.triggers.always_notify.on_battery %}checked{% endif %}>
+                                <label class="form-check-label" for="triggers.always_notify.on_battery">On Battery</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="triggers.always_notify.low_battery" 
+                                       name="triggers.always_notify.low_battery" {% if config.triggers.always_notify.low_battery %}checked{% endif %}>
+                                <label class="form-check-label" for="triggers.always_notify.low_battery">Low Battery</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="triggers.always_notify.critical_battery" 
+                                       name="triggers.always_notify.critical_battery" {% if config.triggers.always_notify.critical_battery %}checked{% endif %}>
+                                <label class="form-check-label" for="triggers.always_notify.critical_battery">Critical Battery</label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Trigger Settings</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
+</div>
+{% endblock %}
 
-    <script>
-        // Toggle notification settings visibility
-        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
-                const settingsDiv = this.closest('.notification-group').querySelector('div[class$="-settings"]');
-                if (settingsDiv) {
-                    settingsDiv.style.display = this.checked ? 'block' : 'none';
+{% block extra_css %}
+<style>
+    /* Combine CSS from both templates */
+    .card {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-section {
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--bs-border-color);
+    }
+    
+    .form-section:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+    
+    .header-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .header-row .btn {
+        padding: 0.25rem 0.5rem;
+    }
+
+    #password-strength {
+        height: 4px;
+        background-color: var(--bs-gray-200);
+        border-radius: 2px;
+        margin-top: 0.5rem;
+    }
+
+    #password-strength[data-strength="weak"] {
+        background-color: var(--bs-danger);
+        width: 33%;
+    }
+
+    #password-strength[data-strength="medium"] {
+        background-color: var(--bs-warning);
+        width: 66%;
+    }
+
+    #password-strength[data-strength="strong"] {
+        background-color: var(--bs-success);
+        width: 100%;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Combine JavaScript from both templates
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize password strength indicator
+        initPasswordStrength();
+        
+        // Initialize notification toggles
+        initNotificationToggles();
+        
+        // Initialize webhook header management
+        initWebhookHeaders();
+        
+        // Initialize form validation
+        initFormValidation();
+    });
+
+    // Password strength indicator (from settings.html)
+    function initPasswordStrength() {
+        const passwordInput = document.getElementById('web_interface.password');
+        const strengthIndicator = document.getElementById('password-strength');
+        
+        if (passwordInput && strengthIndicator) {
+            passwordInput.addEventListener('input', function() {
+                const password = this.value;
+                const strength = calculatePasswordStrength(password);
+                updateStrengthIndicator(strength);
+            });
+        }
+    }
+
+    function calculatePasswordStrength(password) {
+        let strength = 0;
+        if (password.length >= 8) strength++;
+        if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength++;
+        if (password.match(/[0-9]/)) strength++;
+        if (password.match(/[^a-zA-Z0-9]/)) strength++;
+        return strength;
+    }
+
+    function updateStrengthIndicator(strength) {
+        const indicator = document.getElementById('password-strength');
+        if (strength <= 1) {
+            indicator.setAttribute('data-strength', 'weak');
+        } else if (strength <= 3) {
+            indicator.setAttribute('data-strength', 'medium');
+        } else {
+            indicator.setAttribute('data-strength', 'strong');
+        }
+    }
+
+    // Notification toggles (from config.html)
+    function initNotificationToggles() {
+        const notificationTypes = ['webhook', 'email', 'sms'];
+        notificationTypes.forEach(type => {
+            const toggle = document.getElementById(`notifications.${type}.enabled`);
+            const section = document.getElementById(`${type}-settings`);
+            
+            if (toggle && section) {
+                toggle.addEventListener('change', function() {
+                    section.style.display = this.checked ? 'block' : 'none';
+                });
+            }
+        });
+    }
+
+    // Webhook header management (from config.html)
+    function initWebhookHeaders() {
+        const addButton = document.getElementById('add-header');
+        const container = document.getElementById('webhook-headers');
+        
+        if (addButton && container) {
+            addButton.addEventListener('click', function() {
+                addHeader();
+            });
+        }
+    }
+
+    function addHeader() {
+        const container = document.getElementById('webhook-headers');
+        const index = container.children.length;
+        
+        const headerRow = document.createElement('div');
+        headerRow.className = 'header-row mb-2';
+        headerRow.innerHTML = `
+            <input type="text" class="form-control" name="notifications.webhook.headers[${index}][key]" placeholder="Header name">
+            <input type="text" class="form-control" name="notifications.webhook.headers[${index}][value]" placeholder="Header value">
+            <button type="button" class="btn btn-danger" onclick="removeHeader(this)">Remove</button>
+        `;
+        
+        container.appendChild(headerRow);
+    }
+
+    function removeHeader(button) {
+        button.closest('.header-row').remove();
+    }
+
+    // Form validation (combined from both templates)
+    function initFormValidation() {
+        const forms = document.querySelectorAll('form');
+        forms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                if (!validateForm(this)) {
+                    e.preventDefault();
                 }
             });
         });
-    </script>
-</body>
-</html> 
+    }
+
+    function validateForm(form) {
+        let isValid = true;
+        const requiredFields = form.querySelectorAll('[required]');
+        
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                isValid = false;
+                field.classList.add('is-invalid');
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+        
+        return isValid;
+    }
+</script>
+{% endblock %} 

@@ -3,6 +3,7 @@ flask==3.0.2
 flask-login==0.6.3
 flask-wtf==1.2.1
 werkzeug==3.0.1
+email_validator==2.1.0.post1  # Email validation for WTForms
 
 # UPS monitoring
 nut2>=2.1.0

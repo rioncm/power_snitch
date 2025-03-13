@@ -6,7 +6,7 @@ INSERT OR IGNORE INTO ups_config (name, description, poll_interval) VALUES
 
 -- Insert default web interface settings with bcrypt hashed password "password"
 INSERT OR IGNORE INTO web_interface (port, password_hash, setup_completed) 
-VALUES (80, '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewKyDAXxqXqXqXqX', 0);
+VALUES (80, 'scrypt:32768:8:1$pHDt0joiS25zK4F6$fc40e48f064dcbd7031adf2676c01273ff17572ff24fe02ee8f10220fd37627d246c4c78669f9871719af96c0c9fd9de09525fa9213b749d1ae8f457149cd2ef', 0);
 
 -- Insert default health check configuration
 INSERT OR IGNORE INTO health_check (enabled, notification_time) VALUES 

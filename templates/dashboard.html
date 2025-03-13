@@ -1,102 +1,179 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Power Snitch - Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-    <div class="dashboard-container">
-        <nav class="navbar">
-            <h1>Power Snitch</h1>
-            <div class="nav-links">
-                <a href="{{ url_for('index') }}" class="active">Dashboard</a>
-                <a href="{{ url_for('settings') }}">Settings</a>
-                <a href="{{ url_for('logout') }}">Logout</a>
-            </div>
-        </nav>
+{% extends "base.html" %}
 
-        <div class="main-content">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ category }}">{{ message }}</div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
+{% block title %}Power Snitch - Dashboard{% endblock %}
 
-            <div class="status-panel">
-                <h2>UPS Status</h2>
-                <div class="status-grid">
-                    <div class="status-item">
-                        <span class="label">Status:</span>
-                        <span class="value">{{ status.get('ups.status', 'Unknown') }}</span>
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="row">
+        <!-- Status Panel -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">UPS Status</h5>
+                    <div class="status-indicator">
+                        <span class="status-text">Last Updated: {{ status.get('timestamp', 'Never') }}</span>
                     </div>
-                    <div class="status-item">
-                        <span class="label">Battery Charge:</span>
-                        <span class="value">{{ status.get('battery.charge', '0') }}%</span>
-                    </div>
-                    <div class="status-item">
-                        <span class="label">Runtime:</span>
-                        <span class="value">{{ status.get('battery.runtime', '0') }} seconds</span>
-                    </div>
-                    <div class="status-item">
-                        <span class="label">Load:</span>
-                        <span class="value">{{ status.get('ups.load', '0') }}%</span>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="status-card">
+                                <div class="status-icon">
+                                    <i class="bi bi-lightning-charge-fill"></i>
+                                </div>
+                                <div class="status-info">
+                                    <span class="status-label">Status</span>
+                                    <span class="status-value">{{ status.status }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="status-card">
+                                <div class="status-icon">
+                                    <i class="bi bi-battery-charging"></i>
+                                </div>
+                                <div class="status-info">
+                                    <span class="status-label">Battery Charge</span>
+                                    <span class="status-value">{{ status.battery.charge }}%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="status-card">
+                                <div class="status-icon">
+                                    <i class="bi bi-clock"></i>
+                                </div>
+                                <div class="status-info">
+                                    <span class="status-label">Runtime</span>
+                                    <span class="status-value">{{ status.battery.runtime }}s</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="status-card">
+                                <div class="status-icon">
+                                    <i class="bi bi-speedometer2"></i>
+                                </div>
+                                <div class="status-info">
+                                    <span class="status-label">Load</span>
+                                    <span class="status-value">{{ status.output.power }}%</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div class="chart-panel">
-                <h2>Battery History</h2>
-                <canvas id="batteryChart"></canvas>
+        <!-- Battery History Chart -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Battery History</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="position: relative; height:300px;">
+                        <canvas id="batteryChart"></canvas>
+                    </div>
+                </div>
             </div>
+        </div>
 
-            <div class="alerts-panel">
-                <h2>Recent Alerts</h2>
-                <div class="alerts-list">
-                    {% if alerts %}
-                        {% for alert in alerts %}
-                            <div class="alert-item">
-                                <span class="timestamp">{{ alert.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</span>
-                                <span class="type">{{ alert.type }}</span>
-                                <span class="message">{{ alert.message }}</span>
-                            </div>
-                        {% endfor %}
-                    {% else %}
-                        <p>No recent alerts</p>
-                    {% endif %}
+        <!-- Recent Alerts -->
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Recent Alerts</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Type</th>
+                                    <th>Message</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if alerts %}
+                                    {% for alert in alerts %}
+                                    <tr>
+                                        <td>{{ alert.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                                        <td>
+                                            <span class="badge bg-{{ 'danger' if alert.alert_type == 'error' else 'warning' }}">
+                                                {{ alert.alert_type }}
+                                            </span>
+                                        </td>
+                                        <td>{{ alert.alert_type }}: {{ alert.value }} (threshold: {{ alert.threshold }})</td>
+                                        <td>
+                                            <span class="badge bg-{{ 'success' if alert.resolved else 'secondary' }}">
+                                                {{ 'Resolved' if alert.resolved else 'Active' }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="4" class="text-center">No recent alerts</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
+{% endblock %}
 
-    <script>
-        // Battery history chart
-        const ctx = document.getElementById('batteryChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: {{ battery_history.timestamps | tojson }},
-                datasets: [{
-                    label: 'Battery Charge %',
-                    data: {{ battery_history.charges | tojson }},
-                    borderColor: 'rgb(75, 192, 192)',
-                    tension: 0.1
-                }]
+{% block extra_js %}
+<script>
+// Battery history chart
+const ctx = document.getElementById('batteryChart').getContext('2d');
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: {{ battery_history.timestamps | tojson | default('[]') }},
+        datasets: [{
+            label: 'Battery Charge %',
+            data: {{ battery_history.charges | tojson | default('[]') }},
+            borderColor: 'rgb(75, 192, 192)',
+            backgroundColor: 'rgba(75, 192, 192, 0.1)',
+            tension: 0.4,
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true,
+                max: 100,
+                grid: {
+                    color: 'rgba(0, 0, 0, 0.1)'
+                }
             },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 100
-                    }
+            x: {
+                grid: {
+                    display: false
                 }
             }
-        });
-    </script>
-</body>
-</html> 
+        },
+        plugins: {
+            legend: {
+                display: false
+            }
+        }
+    }
+});
+</script>
+{% endblock %} 

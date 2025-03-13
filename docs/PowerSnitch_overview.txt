@@ -1,0 +1,23 @@
+﻿Power Snitch 
+
+
+Overview
+
+
+Power Snitch is a simple application which is designed to run well on a Raspberry Pi Zero W. The core objective is to monitor a UPS attached to the Pi via USB and send alerts through user defined methods of WebHook, Email, and SMS. 
+
+
+Management of all necessary setup,  management, and display  functions are handled through a web interface.  This includes any management of OS dependencies such as NUT or IPTABLES / iptables-persistent.
+
+
+Stack
+Raspberry Pi Zero W
+Reapian / Debian OS  minimal install
+SQLite database
+Shell Scripts
+Python and supporting libraries
+Flask and supporting libraries (HTTP only)
+
+
+Overall Philosophy 
+The Power Snitch application is the king (also running as root) of the system and should push settings out to any other services where needed.  Code is written as if this is the only additional application installed on the OS. Python libraries are installed at the OS level. Code is written KISS (keep it simple stupid), DRY (Don’t repeat Yourself), and highly modular. Code is liberally logged for DEBUG and modestly logged for INFO with proper logging for ERROR and CRITICAL. Basic security practices should be implemented where applicable. Advanced security is not necessary.
