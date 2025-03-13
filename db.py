@@ -17,7 +17,7 @@ class WebInterface(Base):
     __tablename__ = 'web_interface'
     
     id = Column(Integer, primary_key=True)
-    port = Column(Integer, nullable=False, default=8080)
+    port = Column(Integer, nullable=False, default=80)
     password_hash = Column(String, nullable=False)
     setup_completed = Column(Boolean, nullable=False, default=False)
     created_at = Column(DateTime, default=func.now())

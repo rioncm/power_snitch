@@ -1,0 +1,19 @@
+[Unit]
+Description=Power Snitch Web Interface
+After=network.target power_snitch.service
+Wants=power_snitch.service
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/opt/power_snitch
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/usr/bin/python3 /opt/power_snitch/web_app.py
+Restart=always
+RestartSec=10
+StandardOutput=append:/var/log/power_snitch/web_app.service.log
+StandardError=append:/var/log/power_snitch/web_app.service.error.log
+
+[Install]
+WantedBy=multi-user.target 

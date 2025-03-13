@@ -1,14 +1,12 @@
--- Power Snitch Default Configuration
--- ================================
 
--- Insert default web interface settings with hashed password "password"
--- Using bcrypt hash of "password"
-INSERT OR IGNORE INTO web_interface (port, password_hash) VALUES 
-(8080, '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewKyDAXxqXqXqXqX');
 
 -- Insert default UPS configuration
 INSERT OR IGNORE INTO ups_config (name, description, poll_interval) VALUES 
 ('ups', 'Default UPS Configuration', 5);
+
+-- Insert default web interface settings with bcrypt hashed password "password"
+INSERT OR IGNORE INTO web_interface (port, password_hash, setup_completed) 
+VALUES (80, '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewKyDAXxqXqXqXqX', 0);
 
 -- Insert default health check configuration
 INSERT OR IGNORE INTO health_check (enabled, notification_time) VALUES 
@@ -38,10 +36,10 @@ INSERT OR IGNORE INTO triggers (trigger_type, value) VALUES
 INSERT OR IGNORE INTO always_notify_events (trigger_id, event_type)
 SELECT t.id, e.event_type
 FROM triggers t
-CROSS JOIN (VALUES 
-    ('power_failure'),
-    ('power_restored'),
-    ('low_battery'),
-    ('health_check')
-) AS e(event_type)
+CROSS JOIN (
+    SELECT 'power_failure' as event_type UNION ALL
+    SELECT 'power_restored' UNION ALL
+    SELECT 'low_battery' UNION ALL
+    SELECT 'health_check'
+) AS e
 WHERE t.trigger_type = 'always_notify'; 

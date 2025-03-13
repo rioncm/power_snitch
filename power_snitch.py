@@ -344,7 +344,7 @@ class PowerSnitch:
                 
                 # Sleep for configured interval
                 ups_config = self.db.get_ups_config()
-                logger.info(f"UPS Config from db: {ups_config}")
+                
                 time.sleep(ups_config.poll_interval)
                 
             except KeyboardInterrupt:

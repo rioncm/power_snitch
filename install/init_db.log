@@ -1,0 +1,1330 @@
+2025-03-12 16:20:57,432 - __main__ - INFO - Starting database initialization process
+2025-03-12 16:20:57,433 - __main__ - INFO - Created database directory: .
+2025-03-12 16:20:57,439 - __main__ - INFO - Database initialized with SQLAlchemy models
+2025-03-12 16:20:57,439 - __main__ - INFO - Starting execution of SQL file: /Users/rion/z_code/power_snitch/install/tables.sql
+2025-03-12 16:20:57,439 - __main__ - INFO - Read SQL file content, length: 5662 bytes
+2025-03-12 16:20:57,439 - __main__ - INFO - Found 15 SQL statements to execute
+2025-03-12 16:20:57,439 - __main__ - INFO - Executing statement 1/15
+2025-03-12 16:20:57,439 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:20:57,439 - __main__ - INFO - Command: -- Power Snitch Database Schema
+-- ==========================
+
+-- Web Interface Settings
+CREATE TABL...
+2025-03-12 16:20:57,439 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:20:57,439 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:20:57,439 - __main__ - INFO - Executing statement 2/15
+2025-03-12 16:20:57,440 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:20:57,440 - __main__ - INFO - Command: -- UPS Configuration
+CREATE TABLE IF NOT EXISTS ups_config (
+    id INTEGER PRIMARY KEY,
+    name TE...
+2025-03-12 16:20:57,440 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:20:57,440 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:20:57,440 - __main__ - INFO - Executing statement 3/15
+2025-03-12 16:20:57,440 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:20:57,440 - __main__ - INFO - Command: -- Health Check Configuration
+CREATE TABLE IF NOT EXISTS health_check (
+    id INTEGER PRIMARY KEY,
+...
+2025-03-12 16:20:57,440 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:20:57,440 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:20:57,440 - __main__ - INFO - Executing statement 4/15
+2025-03-12 16:20:57,440 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:20:57,440 - __main__ - INFO - Command: -- Battery Health Configuration
+CREATE TABLE IF NOT EXISTS battery_health_config (
+    id INTEGER PR...
+2025-03-12 16:20:57,440 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:20:57,440 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:20:57,440 - __main__ - INFO - Executing statement 5/15
+2025-03-12 16:20:57,440 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:20:57,440 - __main__ - INFO - Command: -- Battery Health History
+CREATE TABLE IF NOT EXISTS battery_health_history (
+    id INTEGER PRIMARY...
+2025-03-12 16:20:57,440 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:20:57,440 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:20:57,440 - __main__ - INFO - Executing statement 6/15
+2025-03-12 16:20:57,440 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:20:57,440 - __main__ - INFO - Command: -- Battery Alerts
+CREATE TABLE IF NOT EXISTS battery_alerts (
+    id INTEGER PRIMARY KEY,
+    timest...
+2025-03-12 16:20:57,440 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:20:57,440 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:20:57,441 - __main__ - INFO - Executing statement 7/15
+2025-03-12 16:20:57,441 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:20:57,441 - __main__ - INFO - Command: -- Notification Services
+CREATE TABLE IF NOT EXISTS notification_services (
+    id INTEGER PRIMARY K...
+2025-03-12 16:20:57,441 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:20:57,441 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:20:57,441 - __main__ - INFO - Executing statement 8/15
+2025-03-12 16:20:57,441 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:20:57,441 - __main__ - INFO - Command: -- Webhook Configuration
+CREATE TABLE IF NOT EXISTS webhook_config (
+    id INTEGER PRIMARY KEY,
+   ...
+2025-03-12 16:20:57,441 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:20:57,441 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:20:57,441 - __main__ - INFO - Executing statement 9/15
+2025-03-12 16:20:57,441 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:20:57,441 - __main__ - INFO - Command: -- Email Configuration
+CREATE TABLE IF NOT EXISTS email_config (
+    id INTEGER PRIMARY KEY,
+    ser...
+2025-03-12 16:20:57,441 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:20:57,441 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:20:57,441 - __main__ - INFO - Executing statement 10/15
+2025-03-12 16:20:57,441 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:20:57,441 - __main__ - INFO - Command: -- Email Recipients
+CREATE TABLE IF NOT EXISTS email_recipients (
+    id INTEGER PRIMARY KEY,
+    em...
+2025-03-12 16:20:57,441 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:20:57,441 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:20:57,441 - __main__ - INFO - Executing statement 11/15
+2025-03-12 16:20:57,441 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:20:57,441 - __main__ - INFO - Command: -- SMS Configuration (Twilio)
+CREATE TABLE IF NOT EXISTS sms_config (
+    id INTEGER PRIMARY KEY,
+  ...
+2025-03-12 16:20:57,441 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:20:57,441 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:20:57,441 - __main__ - INFO - Executing statement 12/15
+2025-03-12 16:20:57,441 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:20:57,441 - __main__ - INFO - Command: -- SMS Recipients
+CREATE TABLE IF NOT EXISTS sms_recipients (
+    id INTEGER PRIMARY KEY,
+    sms_co...
+2025-03-12 16:20:57,441 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:20:57,441 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:20:57,441 - __main__ - INFO - Executing statement 13/15
+2025-03-12 16:20:57,442 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:20:57,442 - __main__ - INFO - Command: -- Notification Triggers
+CREATE TABLE IF NOT EXISTS triggers (
+    id INTEGER PRIMARY KEY,
+    trigg...
+2025-03-12 16:20:57,442 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:20:57,442 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:20:57,442 - __main__ - INFO - Executing statement 14/15
+2025-03-12 16:20:57,442 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:20:57,442 - __main__ - INFO - Command: -- Always Notify Events
+CREATE TABLE IF NOT EXISTS always_notify_events (
+    id INTEGER PRIMARY KEY...
+2025-03-12 16:20:57,442 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:20:57,442 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:20:57,442 - __main__ - INFO - Completed execution of SQL file: /Users/rion/z_code/power_snitch/install/tables.sql
+2025-03-12 16:20:57,442 - __main__ - INFO - Total file execution time: 0.003 seconds
+2025-03-12 16:20:57,442 - __main__ - INFO - File execution stats: {'total_commands': 14, 'successful_commands': 14, 'failed_commands': 0, 'retried_commands': 0}
+2025-03-12 16:20:57,442 - __main__ - INFO - Verified table exists: web_interface
+2025-03-12 16:20:57,442 - __main__ - INFO - Verified table exists: ups_config
+2025-03-12 16:20:57,442 - __main__ - INFO - Verified table exists: health_check
+2025-03-12 16:20:57,442 - __main__ - INFO - Verified table exists: battery_health_config
+2025-03-12 16:20:57,442 - __main__ - INFO - Verified table exists: battery_health_history
+2025-03-12 16:20:57,442 - __main__ - INFO - Verified table exists: battery_alerts
+2025-03-12 16:20:57,442 - __main__ - INFO - Verified table exists: notification_services
+2025-03-12 16:20:57,442 - __main__ - INFO - Verified table exists: webhook_config
+2025-03-12 16:20:57,443 - __main__ - INFO - Verified table exists: email_config
+2025-03-12 16:20:57,443 - __main__ - INFO - Verified table exists: email_recipients
+2025-03-12 16:20:57,443 - __main__ - INFO - Verified table exists: sms_config
+2025-03-12 16:20:57,443 - __main__ - INFO - Verified table exists: sms_recipients
+2025-03-12 16:20:57,443 - __main__ - INFO - Verified table exists: triggers
+2025-03-12 16:20:57,443 - __main__ - INFO - Verified table exists: always_notify_events
+2025-03-12 16:20:57,443 - __main__ - INFO - Starting execution of SQL file: /Users/rion/z_code/power_snitch/install/defaults.sql
+2025-03-12 16:20:57,443 - __main__ - INFO - Read SQL file content, length: 1431 bytes
+2025-03-12 16:20:57,443 - __main__ - INFO - Found 8 SQL statements to execute
+2025-03-12 16:20:57,443 - __main__ - INFO - Executing statement 1/8
+2025-03-12 16:20:57,443 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:20:57,443 - __main__ - INFO - Command: -- Insert default UPS configuration
+INSERT OR IGNORE INTO ups_config (name, description, poll_interv...
+2025-03-12 16:20:57,443 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:20:57,443 - __main__ - INFO - Rows affected: 1
+2025-03-12 16:20:57,443 - __main__ - INFO - Executing statement 2/8
+2025-03-12 16:20:57,443 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:20:57,443 - __main__ - INFO - Command: -- Insert default web interface settings with bcrypt hashed password "password"
+INSERT OR IGNORE INT...
+2025-03-12 16:20:57,444 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:20:57,444 - __main__ - INFO - Rows affected: 0
+2025-03-12 16:20:57,444 - __main__ - INFO - Executing statement 3/8
+2025-03-12 16:20:57,444 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:20:57,444 - __main__ - INFO - Command: -- Insert default health check configuration
+INSERT OR IGNORE INTO health_check (enabled, notificati...
+2025-03-12 16:20:57,444 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:20:57,444 - __main__ - INFO - Rows affected: 1
+2025-03-12 16:20:57,444 - __main__ - INFO - Executing statement 4/8
+2025-03-12 16:20:57,444 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:20:57,444 - __main__ - INFO - Command: -- Insert default battery health configuration
+INSERT OR IGNORE INTO battery_health_config (
+    low...
+2025-03-12 16:20:57,444 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:20:57,444 - __main__ - INFO - Rows affected: 1
+2025-03-12 16:20:57,444 - __main__ - INFO - Executing statement 5/8
+2025-03-12 16:20:57,445 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:20:57,445 - __main__ - INFO - Command: -- Insert notification services (all disabled by default)
+INSERT OR IGNORE INTO notification_service...
+2025-03-12 16:20:57,445 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:20:57,445 - __main__ - INFO - Rows affected: 3
+2025-03-12 16:20:57,445 - __main__ - INFO - Executing statement 6/8
+2025-03-12 16:20:57,445 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:20:57,445 - __main__ - INFO - Command: -- Insert default triggers
+INSERT OR IGNORE INTO triggers (trigger_type, value) VALUES 
+('battery_le...
+2025-03-12 16:20:57,445 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:20:57,445 - __main__ - INFO - Rows affected: 4
+2025-03-12 16:20:57,445 - __main__ - INFO - Executing statement 7/8
+2025-03-12 16:20:57,445 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:20:57,445 - __main__ - INFO - Command: -- Insert default always notify events
+INSERT OR IGNORE INTO always_notify_events (trigger_id, event...
+2025-03-12 16:20:57,446 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:20:57,446 - __main__ - INFO - Rows affected: 4
+2025-03-12 16:20:57,446 - __main__ - INFO - Completed execution of SQL file: /Users/rion/z_code/power_snitch/install/defaults.sql
+2025-03-12 16:20:57,446 - __main__ - INFO - Total file execution time: 0.003 seconds
+2025-03-12 16:20:57,446 - __main__ - INFO - File execution stats: {'total_commands': 21, 'successful_commands': 21, 'failed_commands': 0, 'retried_commands': 0}
+2025-03-12 16:20:57,446 - __main__ - INFO - Table web_interface contains 0 rows
+2025-03-12 16:20:57,446 - __main__ - WARNING - Table web_interface has fewer rows than expected: 0 < 1
+2025-03-12 16:20:57,446 - __main__ - INFO - Table ups_config contains 1 rows
+2025-03-12 16:20:57,446 - __main__ - INFO - Table health_check contains 1 rows
+2025-03-12 16:20:57,446 - __main__ - INFO - Table battery_health_config contains 1 rows
+2025-03-12 16:20:57,446 - __main__ - INFO - Table notification_services contains 3 rows
+2025-03-12 16:20:57,446 - __main__ - INFO - Table triggers contains 4 rows
+2025-03-12 16:20:57,446 - __main__ - INFO - Database initialization completed successfully
+2025-03-12 16:20:57,446 - __main__ - INFO - Total initialization time: 0.014 seconds
+2025-03-12 16:20:57,446 - __main__ - INFO - Final statistics:
+2025-03-12 16:20:57,446 - __main__ - INFO - Total commands executed: 21
+2025-03-12 16:20:57,446 - __main__ - INFO - Successful commands: 21
+2025-03-12 16:20:57,446 - __main__ - INFO - Failed commands: 0
+2025-03-12 16:20:57,446 - __main__ - INFO - Retried commands: 0
+2025-03-12 16:20:57,446 - __main__ - INFO - Database sessions cleaned up
+2025-03-12 16:28:05,220 - __main__ - INFO - Starting database initialization process
+2025-03-12 16:28:05,221 - __main__ - INFO - Created database directory: .
+2025-03-12 16:28:05,226 - __main__ - INFO - Database initialized with SQLAlchemy models
+2025-03-12 16:28:05,226 - __main__ - INFO - Starting execution of SQL file: /Users/rion/z_code/power_snitch/install/tables.sql
+2025-03-12 16:28:05,227 - __main__ - INFO - Read SQL file content, length: 5662 bytes
+2025-03-12 16:28:05,227 - __main__ - INFO - Found 15 SQL statements to execute
+2025-03-12 16:28:05,227 - __main__ - INFO - Executing statement 1/15
+2025-03-12 16:28:05,227 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:28:05,227 - __main__ - INFO - Command: -- Power Snitch Database Schema
+-- ==========================
+
+-- Web Interface Settings
+CREATE TABL...
+2025-03-12 16:28:05,227 - __main__ - INFO - Execution time: 0.001 seconds
+2025-03-12 16:28:05,227 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:28:05,227 - __main__ - INFO - Executing statement 2/15
+2025-03-12 16:28:05,227 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:28:05,227 - __main__ - INFO - Command: -- UPS Configuration
+CREATE TABLE IF NOT EXISTS ups_config (
+    id INTEGER PRIMARY KEY,
+    name TE...
+2025-03-12 16:28:05,228 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:28:05,228 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:28:05,228 - __main__ - INFO - Executing statement 3/15
+2025-03-12 16:28:05,228 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:28:05,228 - __main__ - INFO - Command: -- Health Check Configuration
+CREATE TABLE IF NOT EXISTS health_check (
+    id INTEGER PRIMARY KEY,
+...
+2025-03-12 16:28:05,228 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:28:05,228 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:28:05,228 - __main__ - INFO - Executing statement 4/15
+2025-03-12 16:28:05,228 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:28:05,228 - __main__ - INFO - Command: -- Battery Health Configuration
+CREATE TABLE IF NOT EXISTS battery_health_config (
+    id INTEGER PR...
+2025-03-12 16:28:05,228 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:28:05,228 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:28:05,228 - __main__ - INFO - Executing statement 5/15
+2025-03-12 16:28:05,228 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:28:05,228 - __main__ - INFO - Command: -- Battery Health History
+CREATE TABLE IF NOT EXISTS battery_health_history (
+    id INTEGER PRIMARY...
+2025-03-12 16:28:05,228 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:28:05,228 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:28:05,228 - __main__ - INFO - Executing statement 6/15
+2025-03-12 16:28:05,228 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:28:05,228 - __main__ - INFO - Command: -- Battery Alerts
+CREATE TABLE IF NOT EXISTS battery_alerts (
+    id INTEGER PRIMARY KEY,
+    timest...
+2025-03-12 16:28:05,229 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:28:05,229 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:28:05,229 - __main__ - INFO - Executing statement 7/15
+2025-03-12 16:28:05,229 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:28:05,229 - __main__ - INFO - Command: -- Notification Services
+CREATE TABLE IF NOT EXISTS notification_services (
+    id INTEGER PRIMARY K...
+2025-03-12 16:28:05,229 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:28:05,229 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:28:05,229 - __main__ - INFO - Executing statement 8/15
+2025-03-12 16:28:05,229 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:28:05,229 - __main__ - INFO - Command: -- Webhook Configuration
+CREATE TABLE IF NOT EXISTS webhook_config (
+    id INTEGER PRIMARY KEY,
+   ...
+2025-03-12 16:28:05,229 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:28:05,229 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:28:05,229 - __main__ - INFO - Executing statement 9/15
+2025-03-12 16:28:05,229 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:28:05,229 - __main__ - INFO - Command: -- Email Configuration
+CREATE TABLE IF NOT EXISTS email_config (
+    id INTEGER PRIMARY KEY,
+    ser...
+2025-03-12 16:28:05,229 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:28:05,229 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:28:05,229 - __main__ - INFO - Executing statement 10/15
+2025-03-12 16:28:05,229 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:28:05,229 - __main__ - INFO - Command: -- Email Recipients
+CREATE TABLE IF NOT EXISTS email_recipients (
+    id INTEGER PRIMARY KEY,
+    em...
+2025-03-12 16:28:05,229 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:28:05,229 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:28:05,229 - __main__ - INFO - Executing statement 11/15
+2025-03-12 16:28:05,229 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:28:05,229 - __main__ - INFO - Command: -- SMS Configuration (Twilio)
+CREATE TABLE IF NOT EXISTS sms_config (
+    id INTEGER PRIMARY KEY,
+  ...
+2025-03-12 16:28:05,229 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:28:05,229 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:28:05,229 - __main__ - INFO - Executing statement 12/15
+2025-03-12 16:28:05,229 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:28:05,229 - __main__ - INFO - Command: -- SMS Recipients
+CREATE TABLE IF NOT EXISTS sms_recipients (
+    id INTEGER PRIMARY KEY,
+    sms_co...
+2025-03-12 16:28:05,229 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:28:05,229 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:28:05,229 - __main__ - INFO - Executing statement 13/15
+2025-03-12 16:28:05,229 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:28:05,230 - __main__ - INFO - Command: -- Notification Triggers
+CREATE TABLE IF NOT EXISTS triggers (
+    id INTEGER PRIMARY KEY,
+    trigg...
+2025-03-12 16:28:05,230 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:28:05,230 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:28:05,230 - __main__ - INFO - Executing statement 14/15
+2025-03-12 16:28:05,230 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:28:05,230 - __main__ - INFO - Command: -- Always Notify Events
+CREATE TABLE IF NOT EXISTS always_notify_events (
+    id INTEGER PRIMARY KEY...
+2025-03-12 16:28:05,230 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:28:05,230 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:28:05,230 - __main__ - INFO - Completed execution of SQL file: /Users/rion/z_code/power_snitch/install/tables.sql
+2025-03-12 16:28:05,230 - __main__ - INFO - Total file execution time: 0.003 seconds
+2025-03-12 16:28:05,230 - __main__ - INFO - File execution stats: {'total_commands': 14, 'successful_commands': 14, 'failed_commands': 0, 'retried_commands': 0}
+2025-03-12 16:28:05,230 - __main__ - INFO - Verified table exists: web_interface
+2025-03-12 16:28:05,230 - __main__ - INFO - Verified table exists: ups_config
+2025-03-12 16:28:05,230 - __main__ - INFO - Verified table exists: health_check
+2025-03-12 16:28:05,230 - __main__ - INFO - Verified table exists: battery_health_config
+2025-03-12 16:28:05,230 - __main__ - INFO - Verified table exists: battery_health_history
+2025-03-12 16:28:05,230 - __main__ - INFO - Verified table exists: battery_alerts
+2025-03-12 16:28:05,230 - __main__ - INFO - Verified table exists: notification_services
+2025-03-12 16:28:05,230 - __main__ - INFO - Verified table exists: webhook_config
+2025-03-12 16:28:05,230 - __main__ - INFO - Verified table exists: email_config
+2025-03-12 16:28:05,230 - __main__ - INFO - Verified table exists: email_recipients
+2025-03-12 16:28:05,230 - __main__ - INFO - Verified table exists: sms_config
+2025-03-12 16:28:05,231 - __main__ - INFO - Verified table exists: sms_recipients
+2025-03-12 16:28:05,231 - __main__ - INFO - Verified table exists: triggers
+2025-03-12 16:28:05,231 - __main__ - INFO - Verified table exists: always_notify_events
+2025-03-12 16:28:05,231 - __main__ - INFO - Starting execution of SQL file: /Users/rion/z_code/power_snitch/install/defaults.sql
+2025-03-12 16:28:05,231 - __main__ - INFO - Read SQL file content, length: 1450 bytes
+2025-03-12 16:28:05,231 - __main__ - INFO - Found 8 SQL statements to execute
+2025-03-12 16:28:05,231 - __main__ - INFO - Executing statement 1/8
+2025-03-12 16:28:05,231 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:28:05,231 - __main__ - INFO - Command: -- Insert default UPS configuration
+INSERT OR IGNORE INTO ups_config (name, description, poll_interv...
+2025-03-12 16:28:05,231 - __main__ - INFO - Execution time: 0.001 seconds
+2025-03-12 16:28:05,231 - __main__ - INFO - Rows affected: 1
+2025-03-12 16:28:05,231 - __main__ - INFO - Executing statement 2/8
+2025-03-12 16:28:05,232 - __main__ - ERROR - Error executing SQL file /Users/rion/z_code/power_snitch/install/defaults.sql: (sqlite3.OperationalError) table web_interface has no column named setup_complete
+[SQL: -- Insert default web interface settings with bcrypt hashed password "password"
+INSERT OR IGNORE INTO web_interface (port, password_hash, setup_complete) 
+VALUES (80, '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewKyDAXxqXqXqXqX', 0)]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-03-12 16:28:05,232 - __main__ - ERROR - Error initializing database: (sqlite3.OperationalError) table web_interface has no column named setup_complete
+[SQL: -- Insert default web interface settings with bcrypt hashed password "password"
+INSERT OR IGNORE INTO web_interface (port, password_hash, setup_complete) 
+VALUES (80, '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewKyDAXxqXqXqXqX', 0)]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-03-12 16:28:05,232 - __main__ - INFO - Database sessions cleaned up
+2025-03-12 16:28:53,357 - __main__ - INFO - Starting database initialization process
+2025-03-12 16:28:53,357 - __main__ - INFO - Created database directory: .
+2025-03-12 16:28:53,358 - __main__ - INFO - Database initialized with SQLAlchemy models
+2025-03-12 16:28:53,358 - __main__ - INFO - Starting execution of SQL file: /Users/rion/z_code/power_snitch/install/tables.sql
+2025-03-12 16:28:53,358 - __main__ - INFO - Read SQL file content, length: 5662 bytes
+2025-03-12 16:28:53,358 - __main__ - INFO - Found 15 SQL statements to execute
+2025-03-12 16:28:53,358 - __main__ - INFO - Executing statement 1/15
+2025-03-12 16:28:53,359 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:28:53,359 - __main__ - INFO - Command: -- Power Snitch Database Schema
+-- ==========================
+
+-- Web Interface Settings
+CREATE TABL...
+2025-03-12 16:28:53,359 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:28:53,359 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:28:53,359 - __main__ - INFO - Executing statement 2/15
+2025-03-12 16:28:53,359 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:28:53,359 - __main__ - INFO - Command: -- UPS Configuration
+CREATE TABLE IF NOT EXISTS ups_config (
+    id INTEGER PRIMARY KEY,
+    name TE...
+2025-03-12 16:28:53,359 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:28:53,359 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:28:53,359 - __main__ - INFO - Executing statement 3/15
+2025-03-12 16:28:53,359 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:28:53,359 - __main__ - INFO - Command: -- Health Check Configuration
+CREATE TABLE IF NOT EXISTS health_check (
+    id INTEGER PRIMARY KEY,
+...
+2025-03-12 16:28:53,359 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:28:53,359 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:28:53,359 - __main__ - INFO - Executing statement 4/15
+2025-03-12 16:28:53,359 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:28:53,359 - __main__ - INFO - Command: -- Battery Health Configuration
+CREATE TABLE IF NOT EXISTS battery_health_config (
+    id INTEGER PR...
+2025-03-12 16:28:53,359 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:28:53,359 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:28:53,359 - __main__ - INFO - Executing statement 5/15
+2025-03-12 16:28:53,360 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:28:53,360 - __main__ - INFO - Command: -- Battery Health History
+CREATE TABLE IF NOT EXISTS battery_health_history (
+    id INTEGER PRIMARY...
+2025-03-12 16:28:53,360 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:28:53,360 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:28:53,360 - __main__ - INFO - Executing statement 6/15
+2025-03-12 16:28:53,360 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:28:53,360 - __main__ - INFO - Command: -- Battery Alerts
+CREATE TABLE IF NOT EXISTS battery_alerts (
+    id INTEGER PRIMARY KEY,
+    timest...
+2025-03-12 16:28:53,360 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:28:53,360 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:28:53,360 - __main__ - INFO - Executing statement 7/15
+2025-03-12 16:28:53,360 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:28:53,360 - __main__ - INFO - Command: -- Notification Services
+CREATE TABLE IF NOT EXISTS notification_services (
+    id INTEGER PRIMARY K...
+2025-03-12 16:28:53,360 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:28:53,360 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:28:53,360 - __main__ - INFO - Executing statement 8/15
+2025-03-12 16:28:53,360 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:28:53,360 - __main__ - INFO - Command: -- Webhook Configuration
+CREATE TABLE IF NOT EXISTS webhook_config (
+    id INTEGER PRIMARY KEY,
+   ...
+2025-03-12 16:28:53,360 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:28:53,360 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:28:53,360 - __main__ - INFO - Executing statement 9/15
+2025-03-12 16:28:53,360 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:28:53,360 - __main__ - INFO - Command: -- Email Configuration
+CREATE TABLE IF NOT EXISTS email_config (
+    id INTEGER PRIMARY KEY,
+    ser...
+2025-03-12 16:28:53,360 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:28:53,360 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:28:53,360 - __main__ - INFO - Executing statement 10/15
+2025-03-12 16:28:53,360 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:28:53,360 - __main__ - INFO - Command: -- Email Recipients
+CREATE TABLE IF NOT EXISTS email_recipients (
+    id INTEGER PRIMARY KEY,
+    em...
+2025-03-12 16:28:53,360 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:28:53,360 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:28:53,360 - __main__ - INFO - Executing statement 11/15
+2025-03-12 16:28:53,361 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:28:53,361 - __main__ - INFO - Command: -- SMS Configuration (Twilio)
+CREATE TABLE IF NOT EXISTS sms_config (
+    id INTEGER PRIMARY KEY,
+  ...
+2025-03-12 16:28:53,361 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:28:53,361 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:28:53,361 - __main__ - INFO - Executing statement 12/15
+2025-03-12 16:28:53,361 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:28:53,361 - __main__ - INFO - Command: -- SMS Recipients
+CREATE TABLE IF NOT EXISTS sms_recipients (
+    id INTEGER PRIMARY KEY,
+    sms_co...
+2025-03-12 16:28:53,361 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:28:53,361 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:28:53,361 - __main__ - INFO - Executing statement 13/15
+2025-03-12 16:28:53,361 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:28:53,361 - __main__ - INFO - Command: -- Notification Triggers
+CREATE TABLE IF NOT EXISTS triggers (
+    id INTEGER PRIMARY KEY,
+    trigg...
+2025-03-12 16:28:53,361 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:28:53,361 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:28:53,361 - __main__ - INFO - Executing statement 14/15
+2025-03-12 16:28:53,361 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:28:53,361 - __main__ - INFO - Command: -- Always Notify Events
+CREATE TABLE IF NOT EXISTS always_notify_events (
+    id INTEGER PRIMARY KEY...
+2025-03-12 16:28:53,361 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:28:53,361 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:28:53,361 - __main__ - INFO - Completed execution of SQL file: /Users/rion/z_code/power_snitch/install/tables.sql
+2025-03-12 16:28:53,361 - __main__ - INFO - Total file execution time: 0.003 seconds
+2025-03-12 16:28:53,361 - __main__ - INFO - File execution stats: {'total_commands': 14, 'successful_commands': 14, 'failed_commands': 0, 'retried_commands': 0}
+2025-03-12 16:28:53,361 - __main__ - INFO - Verified table exists: web_interface
+2025-03-12 16:28:53,361 - __main__ - INFO - Verified table exists: ups_config
+2025-03-12 16:28:53,361 - __main__ - INFO - Verified table exists: health_check
+2025-03-12 16:28:53,361 - __main__ - INFO - Verified table exists: battery_health_config
+2025-03-12 16:28:53,361 - __main__ - INFO - Verified table exists: battery_health_history
+2025-03-12 16:28:53,362 - __main__ - INFO - Verified table exists: battery_alerts
+2025-03-12 16:28:53,362 - __main__ - INFO - Verified table exists: notification_services
+2025-03-12 16:28:53,362 - __main__ - INFO - Verified table exists: webhook_config
+2025-03-12 16:28:53,362 - __main__ - INFO - Verified table exists: email_config
+2025-03-12 16:28:53,362 - __main__ - INFO - Verified table exists: email_recipients
+2025-03-12 16:28:53,362 - __main__ - INFO - Verified table exists: sms_config
+2025-03-12 16:28:53,362 - __main__ - INFO - Verified table exists: sms_recipients
+2025-03-12 16:28:53,362 - __main__ - INFO - Verified table exists: triggers
+2025-03-12 16:28:53,362 - __main__ - INFO - Verified table exists: always_notify_events
+2025-03-12 16:28:53,362 - __main__ - INFO - Starting execution of SQL file: /Users/rion/z_code/power_snitch/install/defaults.sql
+2025-03-12 16:28:53,362 - __main__ - INFO - Read SQL file content, length: 1451 bytes
+2025-03-12 16:28:53,362 - __main__ - INFO - Found 8 SQL statements to execute
+2025-03-12 16:28:53,362 - __main__ - INFO - Executing statement 1/8
+2025-03-12 16:28:53,363 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:28:53,363 - __main__ - INFO - Command: -- Insert default UPS configuration
+INSERT OR IGNORE INTO ups_config (name, description, poll_interv...
+2025-03-12 16:28:53,363 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:28:53,363 - __main__ - INFO - Rows affected: 1
+2025-03-12 16:28:53,363 - __main__ - INFO - Executing statement 2/8
+2025-03-12 16:28:53,363 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:28:53,363 - __main__ - INFO - Command: -- Insert default web interface settings with bcrypt hashed password "password"
+INSERT OR IGNORE INT...
+2025-03-12 16:28:53,363 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:28:53,363 - __main__ - INFO - Rows affected: 1
+2025-03-12 16:28:53,363 - __main__ - INFO - Executing statement 3/8
+2025-03-12 16:28:53,363 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:28:53,363 - __main__ - INFO - Command: -- Insert default health check configuration
+INSERT OR IGNORE INTO health_check (enabled, notificati...
+2025-03-12 16:28:53,363 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:28:53,363 - __main__ - INFO - Rows affected: 1
+2025-03-12 16:28:53,363 - __main__ - INFO - Executing statement 4/8
+2025-03-12 16:28:53,364 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:28:53,364 - __main__ - INFO - Command: -- Insert default battery health configuration
+INSERT OR IGNORE INTO battery_health_config (
+    low...
+2025-03-12 16:28:53,364 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:28:53,364 - __main__ - INFO - Rows affected: 1
+2025-03-12 16:28:53,364 - __main__ - INFO - Executing statement 5/8
+2025-03-12 16:28:53,364 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:28:53,364 - __main__ - INFO - Command: -- Insert notification services (all disabled by default)
+INSERT OR IGNORE INTO notification_service...
+2025-03-12 16:28:53,364 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:28:53,364 - __main__ - INFO - Rows affected: 3
+2025-03-12 16:28:53,364 - __main__ - INFO - Executing statement 6/8
+2025-03-12 16:28:53,365 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:28:53,365 - __main__ - INFO - Command: -- Insert default triggers
+INSERT OR IGNORE INTO triggers (trigger_type, value) VALUES 
+('battery_le...
+2025-03-12 16:28:53,365 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:28:53,365 - __main__ - INFO - Rows affected: 4
+2025-03-12 16:28:53,365 - __main__ - INFO - Executing statement 7/8
+2025-03-12 16:28:53,365 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:28:53,365 - __main__ - INFO - Command: -- Insert default always notify events
+INSERT OR IGNORE INTO always_notify_events (trigger_id, event...
+2025-03-12 16:28:53,365 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:28:53,365 - __main__ - INFO - Rows affected: 4
+2025-03-12 16:28:53,365 - __main__ - INFO - Completed execution of SQL file: /Users/rion/z_code/power_snitch/install/defaults.sql
+2025-03-12 16:28:53,365 - __main__ - INFO - Total file execution time: 0.003 seconds
+2025-03-12 16:28:53,365 - __main__ - INFO - File execution stats: {'total_commands': 21, 'successful_commands': 21, 'failed_commands': 0, 'retried_commands': 0}
+2025-03-12 16:28:53,365 - __main__ - INFO - Table web_interface contains 1 rows
+2025-03-12 16:28:53,365 - __main__ - INFO - Table ups_config contains 2 rows
+2025-03-12 16:28:53,366 - __main__ - INFO - Table health_check contains 1 rows
+2025-03-12 16:28:53,366 - __main__ - INFO - Table battery_health_config contains 1 rows
+2025-03-12 16:28:53,366 - __main__ - INFO - Table notification_services contains 3 rows
+2025-03-12 16:28:53,366 - __main__ - INFO - Table triggers contains 4 rows
+2025-03-12 16:28:53,366 - __main__ - INFO - Database initialization completed successfully
+2025-03-12 16:28:53,366 - __main__ - INFO - Total initialization time: 0.009 seconds
+2025-03-12 16:28:53,366 - __main__ - INFO - Final statistics:
+2025-03-12 16:28:53,366 - __main__ - INFO - Total commands executed: 21
+2025-03-12 16:28:53,366 - __main__ - INFO - Successful commands: 21
+2025-03-12 16:28:53,366 - __main__ - INFO - Failed commands: 0
+2025-03-12 16:28:53,366 - __main__ - INFO - Retried commands: 0
+2025-03-12 16:28:53,366 - __main__ - INFO - Database sessions cleaned up
+2025-03-12 16:29:39,461 - __main__ - INFO - Starting database initialization process
+2025-03-12 16:29:39,461 - __main__ - INFO - Created database directory: .
+2025-03-12 16:29:39,468 - __main__ - INFO - Database initialized with SQLAlchemy models
+2025-03-12 16:29:39,468 - __main__ - INFO - Starting execution of SQL file: /Users/rion/z_code/power_snitch/install/tables.sql
+2025-03-12 16:29:39,468 - __main__ - INFO - Read SQL file content, length: 5662 bytes
+2025-03-12 16:29:39,468 - __main__ - INFO - Found 15 SQL statements to execute
+2025-03-12 16:29:39,468 - __main__ - INFO - Executing statement 1/15
+2025-03-12 16:29:39,469 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:29:39,469 - __main__ - INFO - Command: -- Power Snitch Database Schema
+-- ==========================
+
+-- Web Interface Settings
+CREATE TABL...
+2025-03-12 16:29:39,469 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:29:39,469 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:29:39,469 - __main__ - INFO - Executing statement 2/15
+2025-03-12 16:29:39,469 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:29:39,469 - __main__ - INFO - Command: -- UPS Configuration
+CREATE TABLE IF NOT EXISTS ups_config (
+    id INTEGER PRIMARY KEY,
+    name TE...
+2025-03-12 16:29:39,469 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:29:39,469 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:29:39,469 - __main__ - INFO - Executing statement 3/15
+2025-03-12 16:29:39,469 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:29:39,469 - __main__ - INFO - Command: -- Health Check Configuration
+CREATE TABLE IF NOT EXISTS health_check (
+    id INTEGER PRIMARY KEY,
+...
+2025-03-12 16:29:39,469 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:29:39,469 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:29:39,470 - __main__ - INFO - Executing statement 4/15
+2025-03-12 16:29:39,470 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:29:39,470 - __main__ - INFO - Command: -- Battery Health Configuration
+CREATE TABLE IF NOT EXISTS battery_health_config (
+    id INTEGER PR...
+2025-03-12 16:29:39,470 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:29:39,470 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:29:39,470 - __main__ - INFO - Executing statement 5/15
+2025-03-12 16:29:39,470 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:29:39,470 - __main__ - INFO - Command: -- Battery Health History
+CREATE TABLE IF NOT EXISTS battery_health_history (
+    id INTEGER PRIMARY...
+2025-03-12 16:29:39,470 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:29:39,470 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:29:39,470 - __main__ - INFO - Executing statement 6/15
+2025-03-12 16:29:39,470 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:29:39,470 - __main__ - INFO - Command: -- Battery Alerts
+CREATE TABLE IF NOT EXISTS battery_alerts (
+    id INTEGER PRIMARY KEY,
+    timest...
+2025-03-12 16:29:39,470 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:29:39,470 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:29:39,470 - __main__ - INFO - Executing statement 7/15
+2025-03-12 16:29:39,470 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:29:39,470 - __main__ - INFO - Command: -- Notification Services
+CREATE TABLE IF NOT EXISTS notification_services (
+    id INTEGER PRIMARY K...
+2025-03-12 16:29:39,470 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:29:39,470 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:29:39,470 - __main__ - INFO - Executing statement 8/15
+2025-03-12 16:29:39,470 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:29:39,470 - __main__ - INFO - Command: -- Webhook Configuration
+CREATE TABLE IF NOT EXISTS webhook_config (
+    id INTEGER PRIMARY KEY,
+   ...
+2025-03-12 16:29:39,470 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:29:39,470 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:29:39,470 - __main__ - INFO - Executing statement 9/15
+2025-03-12 16:29:39,470 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:29:39,470 - __main__ - INFO - Command: -- Email Configuration
+CREATE TABLE IF NOT EXISTS email_config (
+    id INTEGER PRIMARY KEY,
+    ser...
+2025-03-12 16:29:39,471 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:29:39,471 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:29:39,471 - __main__ - INFO - Executing statement 10/15
+2025-03-12 16:29:39,471 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:29:39,471 - __main__ - INFO - Command: -- Email Recipients
+CREATE TABLE IF NOT EXISTS email_recipients (
+    id INTEGER PRIMARY KEY,
+    em...
+2025-03-12 16:29:39,471 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:29:39,471 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:29:39,471 - __main__ - INFO - Executing statement 11/15
+2025-03-12 16:29:39,471 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:29:39,471 - __main__ - INFO - Command: -- SMS Configuration (Twilio)
+CREATE TABLE IF NOT EXISTS sms_config (
+    id INTEGER PRIMARY KEY,
+  ...
+2025-03-12 16:29:39,471 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:29:39,471 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:29:39,471 - __main__ - INFO - Executing statement 12/15
+2025-03-12 16:29:39,471 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:29:39,471 - __main__ - INFO - Command: -- SMS Recipients
+CREATE TABLE IF NOT EXISTS sms_recipients (
+    id INTEGER PRIMARY KEY,
+    sms_co...
+2025-03-12 16:29:39,471 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:29:39,471 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:29:39,471 - __main__ - INFO - Executing statement 13/15
+2025-03-12 16:29:39,471 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:29:39,471 - __main__ - INFO - Command: -- Notification Triggers
+CREATE TABLE IF NOT EXISTS triggers (
+    id INTEGER PRIMARY KEY,
+    trigg...
+2025-03-12 16:29:39,471 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:29:39,471 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:29:39,471 - __main__ - INFO - Executing statement 14/15
+2025-03-12 16:29:39,471 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:29:39,471 - __main__ - INFO - Command: -- Always Notify Events
+CREATE TABLE IF NOT EXISTS always_notify_events (
+    id INTEGER PRIMARY KEY...
+2025-03-12 16:29:39,471 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:29:39,471 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:29:39,471 - __main__ - INFO - Completed execution of SQL file: /Users/rion/z_code/power_snitch/install/tables.sql
+2025-03-12 16:29:39,471 - __main__ - INFO - Total file execution time: 0.003 seconds
+2025-03-12 16:29:39,471 - __main__ - INFO - File execution stats: {'total_commands': 14, 'successful_commands': 14, 'failed_commands': 0, 'retried_commands': 0}
+2025-03-12 16:29:39,472 - __main__ - INFO - Verified table exists: web_interface
+2025-03-12 16:29:39,472 - __main__ - INFO - Verified table exists: ups_config
+2025-03-12 16:29:39,472 - __main__ - INFO - Verified table exists: health_check
+2025-03-12 16:29:39,472 - __main__ - INFO - Verified table exists: battery_health_config
+2025-03-12 16:29:39,472 - __main__ - INFO - Verified table exists: battery_health_history
+2025-03-12 16:29:39,472 - __main__ - INFO - Verified table exists: battery_alerts
+2025-03-12 16:29:39,472 - __main__ - INFO - Verified table exists: notification_services
+2025-03-12 16:29:39,472 - __main__ - INFO - Verified table exists: webhook_config
+2025-03-12 16:29:39,472 - __main__ - INFO - Verified table exists: email_config
+2025-03-12 16:29:39,472 - __main__ - INFO - Verified table exists: email_recipients
+2025-03-12 16:29:39,472 - __main__ - INFO - Verified table exists: sms_config
+2025-03-12 16:29:39,473 - __main__ - INFO - Verified table exists: sms_recipients
+2025-03-12 16:29:39,473 - __main__ - INFO - Verified table exists: triggers
+2025-03-12 16:29:39,473 - __main__ - INFO - Verified table exists: always_notify_events
+2025-03-12 16:29:39,473 - __main__ - INFO - Starting execution of SQL file: /Users/rion/z_code/power_snitch/install/defaults.sql
+2025-03-12 16:29:39,473 - __main__ - INFO - Read SQL file content, length: 1451 bytes
+2025-03-12 16:29:39,473 - __main__ - INFO - Found 8 SQL statements to execute
+2025-03-12 16:29:39,473 - __main__ - INFO - Executing statement 1/8
+2025-03-12 16:29:39,473 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:29:39,473 - __main__ - INFO - Command: -- Insert default UPS configuration
+INSERT OR IGNORE INTO ups_config (name, description, poll_interv...
+2025-03-12 16:29:39,473 - __main__ - INFO - Execution time: 0.001 seconds
+2025-03-12 16:29:39,473 - __main__ - INFO - Rows affected: 1
+2025-03-12 16:29:39,473 - __main__ - INFO - Executing statement 2/8
+2025-03-12 16:29:39,474 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:29:39,474 - __main__ - INFO - Command: -- Insert default web interface settings with bcrypt hashed password "password"
+INSERT OR IGNORE INT...
+2025-03-12 16:29:39,474 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:29:39,474 - __main__ - INFO - Rows affected: 1
+2025-03-12 16:29:39,474 - __main__ - INFO - Executing statement 3/8
+2025-03-12 16:29:39,474 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:29:39,474 - __main__ - INFO - Command: -- Insert default health check configuration
+INSERT OR IGNORE INTO health_check (enabled, notificati...
+2025-03-12 16:29:39,474 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:29:39,474 - __main__ - INFO - Rows affected: 1
+2025-03-12 16:29:39,474 - __main__ - INFO - Executing statement 4/8
+2025-03-12 16:29:39,475 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:29:39,475 - __main__ - INFO - Command: -- Insert default battery health configuration
+INSERT OR IGNORE INTO battery_health_config (
+    low...
+2025-03-12 16:29:39,475 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:29:39,475 - __main__ - INFO - Rows affected: 1
+2025-03-12 16:29:39,475 - __main__ - INFO - Executing statement 5/8
+2025-03-12 16:29:39,475 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:29:39,475 - __main__ - INFO - Command: -- Insert notification services (all disabled by default)
+INSERT OR IGNORE INTO notification_service...
+2025-03-12 16:29:39,475 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:29:39,475 - __main__ - INFO - Rows affected: 3
+2025-03-12 16:29:39,475 - __main__ - INFO - Executing statement 6/8
+2025-03-12 16:29:39,476 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:29:39,476 - __main__ - INFO - Command: -- Insert default triggers
+INSERT OR IGNORE INTO triggers (trigger_type, value) VALUES 
+('battery_le...
+2025-03-12 16:29:39,476 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:29:39,476 - __main__ - INFO - Rows affected: 4
+2025-03-12 16:29:39,476 - __main__ - INFO - Executing statement 7/8
+2025-03-12 16:29:39,476 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:29:39,476 - __main__ - INFO - Command: -- Insert default always notify events
+INSERT OR IGNORE INTO always_notify_events (trigger_id, event...
+2025-03-12 16:29:39,476 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:29:39,476 - __main__ - INFO - Rows affected: 4
+2025-03-12 16:29:39,476 - __main__ - INFO - Completed execution of SQL file: /Users/rion/z_code/power_snitch/install/defaults.sql
+2025-03-12 16:29:39,476 - __main__ - INFO - Total file execution time: 0.004 seconds
+2025-03-12 16:29:39,476 - __main__ - INFO - File execution stats: {'total_commands': 21, 'successful_commands': 21, 'failed_commands': 0, 'retried_commands': 0}
+2025-03-12 16:29:39,476 - __main__ - INFO - Table web_interface contains 1 rows
+2025-03-12 16:29:39,477 - __main__ - INFO - Table ups_config contains 1 rows
+2025-03-12 16:29:39,477 - __main__ - INFO - Table health_check contains 1 rows
+2025-03-12 16:29:39,477 - __main__ - INFO - Table battery_health_config contains 1 rows
+2025-03-12 16:29:39,477 - __main__ - INFO - Table notification_services contains 3 rows
+2025-03-12 16:29:39,477 - __main__ - INFO - Table triggers contains 4 rows
+2025-03-12 16:29:39,477 - __main__ - INFO - Database initialization completed successfully
+2025-03-12 16:29:39,477 - __main__ - INFO - Total initialization time: 0.016 seconds
+2025-03-12 16:29:39,477 - __main__ - INFO - Final statistics:
+2025-03-12 16:29:39,477 - __main__ - INFO - Total commands executed: 21
+2025-03-12 16:29:39,477 - __main__ - INFO - Successful commands: 21
+2025-03-12 16:29:39,477 - __main__ - INFO - Failed commands: 0
+2025-03-12 16:29:39,477 - __main__ - INFO - Retried commands: 0
+2025-03-12 16:29:39,477 - __main__ - INFO - Database sessions cleaned up
+2025-03-12 16:33:54,905 - __main__ - INFO - Starting database initialization process
+2025-03-12 16:33:54,905 - __main__ - INFO - Created database directory: .
+2025-03-12 16:33:54,911 - __main__ - INFO - Database initialized with SQLAlchemy models
+2025-03-12 16:33:54,911 - __main__ - INFO - Starting execution of SQL file: /Users/rion/z_code/power_snitch/install/tables.sql
+2025-03-12 16:33:54,911 - __main__ - INFO - Read SQL file content, length: 5527 bytes
+2025-03-12 16:33:54,911 - __main__ - INFO - Found 15 SQL statements to execute
+2025-03-12 16:33:54,911 - __main__ - INFO - Executing statement 1/15
+2025-03-12 16:33:54,912 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:33:54,912 - __main__ - INFO - Command: -- Power Snitch Database Schema
+-- ==========================
+
+-- Web Interface Settings
+CREATE TABL...
+2025-03-12 16:33:54,912 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:33:54,912 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:33:54,912 - __main__ - INFO - Executing statement 2/15
+2025-03-12 16:33:54,912 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:33:54,912 - __main__ - INFO - Command: -- UPS Configuration
+CREATE TABLE IF NOT EXISTS ups_config (
+    id INTEGER PRIMARY KEY,
+    name TE...
+2025-03-12 16:33:54,912 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:33:54,912 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:33:54,912 - __main__ - INFO - Executing statement 3/15
+2025-03-12 16:33:54,912 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:33:54,912 - __main__ - INFO - Command: -- Health Check Configuration
+CREATE TABLE IF NOT EXISTS health_check (
+    id INTEGER PRIMARY KEY,
+...
+2025-03-12 16:33:54,912 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:33:54,912 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:33:54,912 - __main__ - INFO - Executing statement 4/15
+2025-03-12 16:33:54,912 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:33:54,912 - __main__ - INFO - Command: -- Battery Health Configuration
+CREATE TABLE IF NOT EXISTS battery_health_config (
+    id INTEGER PR...
+2025-03-12 16:33:54,912 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:33:54,912 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:33:54,912 - __main__ - INFO - Executing statement 5/15
+2025-03-12 16:33:54,912 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:33:54,912 - __main__ - INFO - Command: -- Battery Health History
+CREATE TABLE IF NOT EXISTS battery_health_history (
+    id INTEGER PRIMARY...
+2025-03-12 16:33:54,912 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:33:54,912 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:33:54,912 - __main__ - INFO - Executing statement 6/15
+2025-03-12 16:33:54,913 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:33:54,913 - __main__ - INFO - Command: -- Battery Alerts
+CREATE TABLE IF NOT EXISTS battery_alerts (
+    id INTEGER PRIMARY KEY,
+    timest...
+2025-03-12 16:33:54,913 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:33:54,913 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:33:54,913 - __main__ - INFO - Executing statement 7/15
+2025-03-12 16:33:54,913 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:33:54,913 - __main__ - INFO - Command: -- Notification Services
+CREATE TABLE IF NOT EXISTS notification_services (
+    id INTEGER PRIMARY K...
+2025-03-12 16:33:54,913 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:33:54,913 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:33:54,913 - __main__ - INFO - Executing statement 8/15
+2025-03-12 16:33:54,913 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:33:54,913 - __main__ - INFO - Command: -- Webhook Configuration
+CREATE TABLE IF NOT EXISTS webhook_config (
+    id INTEGER PRIMARY KEY,
+   ...
+2025-03-12 16:33:54,913 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:33:54,913 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:33:54,913 - __main__ - INFO - Executing statement 9/15
+2025-03-12 16:33:54,913 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:33:54,913 - __main__ - INFO - Command: -- Email Configuration
+CREATE TABLE IF NOT EXISTS email_config (
+    id INTEGER PRIMARY KEY,
+    ser...
+2025-03-12 16:33:54,913 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:33:54,913 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:33:54,913 - __main__ - INFO - Executing statement 10/15
+2025-03-12 16:33:54,913 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:33:54,913 - __main__ - INFO - Command: -- Email Recipients
+CREATE TABLE IF NOT EXISTS email_recipients (
+    id INTEGER PRIMARY KEY,
+    em...
+2025-03-12 16:33:54,913 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:33:54,913 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:33:54,913 - __main__ - INFO - Executing statement 11/15
+2025-03-12 16:33:54,913 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:33:54,913 - __main__ - INFO - Command: -- SMS Configuration (Twilio)
+CREATE TABLE IF NOT EXISTS sms_config (
+    id INTEGER PRIMARY KEY,
+  ...
+2025-03-12 16:33:54,913 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:33:54,913 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:33:54,913 - __main__ - INFO - Executing statement 12/15
+2025-03-12 16:33:54,914 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:33:54,914 - __main__ - INFO - Command: -- SMS Recipients
+CREATE TABLE IF NOT EXISTS sms_recipients (
+    id INTEGER PRIMARY KEY,
+    sms_co...
+2025-03-12 16:33:54,914 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:33:54,914 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:33:54,914 - __main__ - INFO - Executing statement 13/15
+2025-03-12 16:33:54,914 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:33:54,914 - __main__ - INFO - Command: -- Notification Triggers
+CREATE TABLE IF NOT EXISTS triggers (
+    id INTEGER PRIMARY KEY,
+    trigg...
+2025-03-12 16:33:54,914 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:33:54,914 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:33:54,914 - __main__ - INFO - Executing statement 14/15
+2025-03-12 16:33:54,914 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:33:54,914 - __main__ - INFO - Command: -- Always Notify Events
+CREATE TABLE IF NOT EXISTS always_notify_events (
+    id INTEGER PRIMARY KEY...
+2025-03-12 16:33:54,914 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:33:54,914 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:33:54,914 - __main__ - INFO - Completed execution of SQL file: /Users/rion/z_code/power_snitch/install/tables.sql
+2025-03-12 16:33:54,914 - __main__ - INFO - Total file execution time: 0.003 seconds
+2025-03-12 16:33:54,914 - __main__ - INFO - File execution stats: {'total_commands': 14, 'successful_commands': 14, 'failed_commands': 0, 'retried_commands': 0}
+2025-03-12 16:33:54,914 - __main__ - INFO - Verified table exists: web_interface
+2025-03-12 16:33:54,914 - __main__ - INFO - Verified table exists: ups_config
+2025-03-12 16:33:54,914 - __main__ - INFO - Verified table exists: health_check
+2025-03-12 16:33:54,914 - __main__ - INFO - Verified table exists: battery_health_config
+2025-03-12 16:33:54,914 - __main__ - INFO - Verified table exists: battery_health_history
+2025-03-12 16:33:54,914 - __main__ - INFO - Verified table exists: battery_alerts
+2025-03-12 16:33:54,914 - __main__ - INFO - Verified table exists: notification_services
+2025-03-12 16:33:54,915 - __main__ - INFO - Verified table exists: webhook_config
+2025-03-12 16:33:54,915 - __main__ - INFO - Verified table exists: email_config
+2025-03-12 16:33:54,915 - __main__ - INFO - Verified table exists: email_recipients
+2025-03-12 16:33:54,915 - __main__ - INFO - Verified table exists: sms_config
+2025-03-12 16:33:54,915 - __main__ - INFO - Verified table exists: sms_recipients
+2025-03-12 16:33:54,915 - __main__ - INFO - Verified table exists: triggers
+2025-03-12 16:33:54,915 - __main__ - INFO - Verified table exists: always_notify_events
+2025-03-12 16:33:54,915 - __main__ - INFO - Starting execution of SQL file: /Users/rion/z_code/power_snitch/install/defaults.sql
+2025-03-12 16:33:54,915 - __main__ - INFO - Read SQL file content, length: 1451 bytes
+2025-03-12 16:33:54,915 - __main__ - INFO - Found 8 SQL statements to execute
+2025-03-12 16:33:54,915 - __main__ - INFO - Executing statement 1/8
+2025-03-12 16:33:54,915 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:33:54,915 - __main__ - INFO - Command: -- Insert default UPS configuration
+INSERT OR IGNORE INTO ups_config (name, description, poll_interv...
+2025-03-12 16:33:54,915 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:33:54,915 - __main__ - INFO - Rows affected: 1
+2025-03-12 16:33:54,915 - __main__ - INFO - Executing statement 2/8
+2025-03-12 16:33:54,916 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:33:54,916 - __main__ - INFO - Command: -- Insert default web interface settings with bcrypt hashed password "password"
+INSERT OR IGNORE INT...
+2025-03-12 16:33:54,916 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:33:54,916 - __main__ - INFO - Rows affected: 1
+2025-03-12 16:33:54,916 - __main__ - INFO - Executing statement 3/8
+2025-03-12 16:33:54,917 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:33:54,917 - __main__ - INFO - Command: -- Insert default health check configuration
+INSERT OR IGNORE INTO health_check (enabled, notificati...
+2025-03-12 16:33:54,917 - __main__ - INFO - Execution time: 0.001 seconds
+2025-03-12 16:33:54,917 - __main__ - INFO - Rows affected: 1
+2025-03-12 16:33:54,917 - __main__ - INFO - Executing statement 4/8
+2025-03-12 16:33:54,917 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:33:54,917 - __main__ - INFO - Command: -- Insert default battery health configuration
+INSERT OR IGNORE INTO battery_health_config (
+    low...
+2025-03-12 16:33:54,917 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:33:54,917 - __main__ - INFO - Rows affected: 1
+2025-03-12 16:33:54,917 - __main__ - INFO - Executing statement 5/8
+2025-03-12 16:33:54,918 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:33:54,918 - __main__ - INFO - Command: -- Insert notification services (all disabled by default)
+INSERT OR IGNORE INTO notification_service...
+2025-03-12 16:33:54,918 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:33:54,918 - __main__ - INFO - Rows affected: 3
+2025-03-12 16:33:54,918 - __main__ - INFO - Executing statement 6/8
+2025-03-12 16:33:54,918 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:33:54,918 - __main__ - INFO - Command: -- Insert default triggers
+INSERT OR IGNORE INTO triggers (trigger_type, value) VALUES 
+('battery_le...
+2025-03-12 16:33:54,918 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:33:54,918 - __main__ - INFO - Rows affected: 4
+2025-03-12 16:33:54,918 - __main__ - INFO - Executing statement 7/8
+2025-03-12 16:33:54,919 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:33:54,919 - __main__ - INFO - Command: -- Insert default always notify events
+INSERT OR IGNORE INTO always_notify_events (trigger_id, event...
+2025-03-12 16:33:54,919 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:33:54,919 - __main__ - INFO - Rows affected: 4
+2025-03-12 16:33:54,919 - __main__ - INFO - Completed execution of SQL file: /Users/rion/z_code/power_snitch/install/defaults.sql
+2025-03-12 16:33:54,919 - __main__ - INFO - Total file execution time: 0.004 seconds
+2025-03-12 16:33:54,919 - __main__ - INFO - File execution stats: {'total_commands': 21, 'successful_commands': 21, 'failed_commands': 0, 'retried_commands': 0}
+2025-03-12 16:33:54,919 - __main__ - INFO - Table web_interface contains 1 rows
+2025-03-12 16:33:54,919 - __main__ - INFO - Table ups_config contains 1 rows
+2025-03-12 16:33:54,919 - __main__ - INFO - Table health_check contains 1 rows
+2025-03-12 16:33:54,919 - __main__ - INFO - Table battery_health_config contains 1 rows
+2025-03-12 16:33:54,919 - __main__ - INFO - Table notification_services contains 3 rows
+2025-03-12 16:33:54,919 - __main__ - INFO - Table triggers contains 4 rows
+2025-03-12 16:33:54,919 - __main__ - INFO - Database initialization completed successfully
+2025-03-12 16:33:54,919 - __main__ - INFO - Total initialization time: 0.014 seconds
+2025-03-12 16:33:54,920 - __main__ - INFO - Final statistics:
+2025-03-12 16:33:54,920 - __main__ - INFO - Total commands executed: 21
+2025-03-12 16:33:54,920 - __main__ - INFO - Successful commands: 21
+2025-03-12 16:33:54,920 - __main__ - INFO - Failed commands: 0
+2025-03-12 16:33:54,920 - __main__ - INFO - Retried commands: 0
+2025-03-12 16:33:54,920 - __main__ - INFO - Database sessions cleaned up
+2025-03-12 16:45:13,244 - __main__ - INFO - Starting database initialization process
+2025-03-12 16:45:13,245 - __main__ - INFO - Created database directory: .
+2025-03-12 16:45:13,251 - __main__ - INFO - Database initialized with SQLAlchemy models
+2025-03-12 16:45:13,251 - __main__ - INFO - Starting execution of SQL file: /Users/rion/z_code/power_snitch/install/tables.sql
+2025-03-12 16:45:13,251 - __main__ - INFO - Read SQL file content, length: 5734 bytes
+2025-03-12 16:45:13,251 - __main__ - INFO - Found 15 SQL statements to execute
+2025-03-12 16:45:13,251 - __main__ - INFO - Executing statement 1/15
+2025-03-12 16:45:13,252 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:45:13,252 - __main__ - INFO - Command: -- Power Snitch Database Schema
+-- ==========================
+
+-- Web Interface Settings
+CREATE TABL...
+2025-03-12 16:45:13,252 - __main__ - INFO - Execution time: 0.001 seconds
+2025-03-12 16:45:13,252 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:45:13,252 - __main__ - INFO - Executing statement 2/15
+2025-03-12 16:45:13,252 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:45:13,252 - __main__ - INFO - Command: -- UPS Configuration
+CREATE TABLE IF NOT EXISTS ups_config (
+    id INTEGER PRIMARY KEY,
+    name TE...
+2025-03-12 16:45:13,252 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:45:13,252 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:45:13,252 - __main__ - INFO - Executing statement 3/15
+2025-03-12 16:45:13,252 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:45:13,252 - __main__ - INFO - Command: -- Health Check Configuration
+CREATE TABLE IF NOT EXISTS health_check (
+    id INTEGER PRIMARY KEY,
+...
+2025-03-12 16:45:13,252 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:45:13,252 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:45:13,252 - __main__ - INFO - Executing statement 4/15
+2025-03-12 16:45:13,252 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:45:13,252 - __main__ - INFO - Command: -- Battery Health Configuration
+CREATE TABLE IF NOT EXISTS battery_health_config (
+    id INTEGER PR...
+2025-03-12 16:45:13,252 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:45:13,252 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:45:13,252 - __main__ - INFO - Executing statement 5/15
+2025-03-12 16:45:13,252 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:45:13,252 - __main__ - INFO - Command: -- Battery Health History
+CREATE TABLE IF NOT EXISTS battery_health_history (
+    id INTEGER PRIMARY...
+2025-03-12 16:45:13,252 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:45:13,252 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:45:13,252 - __main__ - INFO - Executing statement 6/15
+2025-03-12 16:45:13,253 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:45:13,253 - __main__ - INFO - Command: -- Battery Alerts
+CREATE TABLE IF NOT EXISTS battery_alerts (
+    id INTEGER PRIMARY KEY,
+    timest...
+2025-03-12 16:45:13,253 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:45:13,253 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:45:13,253 - __main__ - INFO - Executing statement 7/15
+2025-03-12 16:45:13,253 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:45:13,253 - __main__ - INFO - Command: -- Notification Services
+CREATE TABLE IF NOT EXISTS notification_services (
+    id INTEGER PRIMARY K...
+2025-03-12 16:45:13,253 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:45:13,253 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:45:13,253 - __main__ - INFO - Executing statement 8/15
+2025-03-12 16:45:13,253 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:45:13,253 - __main__ - INFO - Command: -- Webhook Configuration
+CREATE TABLE IF NOT EXISTS webhook_config (
+    id INTEGER PRIMARY KEY,
+   ...
+2025-03-12 16:45:13,253 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:45:13,253 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:45:13,253 - __main__ - INFO - Executing statement 9/15
+2025-03-12 16:45:13,253 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:45:13,253 - __main__ - INFO - Command: -- Email Configuration
+CREATE TABLE IF NOT EXISTS email_config (
+    id INTEGER PRIMARY KEY,
+    ser...
+2025-03-12 16:45:13,253 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:45:13,253 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:45:13,253 - __main__ - INFO - Executing statement 10/15
+2025-03-12 16:45:13,253 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:45:13,253 - __main__ - INFO - Command: -- Email Recipients
+CREATE TABLE IF NOT EXISTS email_recipients (
+    id INTEGER PRIMARY KEY,
+    em...
+2025-03-12 16:45:13,253 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:45:13,253 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:45:13,253 - __main__ - INFO - Executing statement 11/15
+2025-03-12 16:45:13,253 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:45:13,253 - __main__ - INFO - Command: -- SMS Configuration (Twilio)
+CREATE TABLE IF NOT EXISTS sms_config (
+    id INTEGER PRIMARY KEY,
+  ...
+2025-03-12 16:45:13,253 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:45:13,253 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:45:13,253 - __main__ - INFO - Executing statement 12/15
+2025-03-12 16:45:13,253 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:45:13,253 - __main__ - INFO - Command: -- SMS Recipients
+CREATE TABLE IF NOT EXISTS sms_recipients (
+    id INTEGER PRIMARY KEY,
+    sms_co...
+2025-03-12 16:45:13,253 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:45:13,253 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:45:13,253 - __main__ - INFO - Executing statement 13/15
+2025-03-12 16:45:13,254 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:45:13,254 - __main__ - INFO - Command: -- Notification Triggers
+CREATE TABLE IF NOT EXISTS triggers (
+    id INTEGER PRIMARY KEY,
+    trigg...
+2025-03-12 16:45:13,254 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:45:13,254 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:45:13,254 - __main__ - INFO - Executing statement 14/15
+2025-03-12 16:45:13,254 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:45:13,254 - __main__ - INFO - Command: -- Always Notify Events
+CREATE TABLE IF NOT EXISTS always_notify_events (
+    id INTEGER PRIMARY KEY...
+2025-03-12 16:45:13,254 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:45:13,254 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:45:13,254 - __main__ - INFO - Completed execution of SQL file: /Users/rion/z_code/power_snitch/install/tables.sql
+2025-03-12 16:45:13,254 - __main__ - INFO - Total file execution time: 0.003 seconds
+2025-03-12 16:45:13,254 - __main__ - INFO - File execution stats: {'total_commands': 14, 'successful_commands': 14, 'failed_commands': 0, 'retried_commands': 0}
+2025-03-12 16:45:13,254 - __main__ - INFO - Verified table exists: web_interface
+2025-03-12 16:45:13,254 - __main__ - INFO - Verified table exists: ups_config
+2025-03-12 16:45:13,254 - __main__ - INFO - Verified table exists: health_check
+2025-03-12 16:45:13,254 - __main__ - INFO - Verified table exists: battery_health_config
+2025-03-12 16:45:13,254 - __main__ - INFO - Verified table exists: battery_health_history
+2025-03-12 16:45:13,254 - __main__ - INFO - Verified table exists: battery_alerts
+2025-03-12 16:45:13,254 - __main__ - INFO - Verified table exists: notification_services
+2025-03-12 16:45:13,254 - __main__ - INFO - Verified table exists: webhook_config
+2025-03-12 16:45:13,254 - __main__ - INFO - Verified table exists: email_config
+2025-03-12 16:45:13,255 - __main__ - INFO - Verified table exists: email_recipients
+2025-03-12 16:45:13,255 - __main__ - INFO - Verified table exists: sms_config
+2025-03-12 16:45:13,255 - __main__ - INFO - Verified table exists: sms_recipients
+2025-03-12 16:45:13,255 - __main__ - INFO - Verified table exists: triggers
+2025-03-12 16:45:13,255 - __main__ - INFO - Verified table exists: always_notify_events
+2025-03-12 16:45:13,255 - __main__ - INFO - Starting execution of SQL file: /Users/rion/z_code/power_snitch/install/defaults.sql
+2025-03-12 16:45:13,255 - __main__ - INFO - Read SQL file content, length: 1451 bytes
+2025-03-12 16:45:13,255 - __main__ - INFO - Found 8 SQL statements to execute
+2025-03-12 16:45:13,255 - __main__ - INFO - Executing statement 1/8
+2025-03-12 16:45:13,255 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:45:13,255 - __main__ - INFO - Command: -- Insert default UPS configuration
+INSERT OR IGNORE INTO ups_config (name, description, poll_interv...
+2025-03-12 16:45:13,255 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:45:13,255 - __main__ - INFO - Rows affected: 1
+2025-03-12 16:45:13,255 - __main__ - INFO - Executing statement 2/8
+2025-03-12 16:45:13,256 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:45:13,256 - __main__ - INFO - Command: -- Insert default web interface settings with bcrypt hashed password "password"
+INSERT OR IGNORE INT...
+2025-03-12 16:45:13,256 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:45:13,256 - __main__ - INFO - Rows affected: 1
+2025-03-12 16:45:13,256 - __main__ - INFO - Executing statement 3/8
+2025-03-12 16:45:13,256 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:45:13,256 - __main__ - INFO - Command: -- Insert default health check configuration
+INSERT OR IGNORE INTO health_check (enabled, notificati...
+2025-03-12 16:45:13,256 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:45:13,256 - __main__ - INFO - Rows affected: 1
+2025-03-12 16:45:13,256 - __main__ - INFO - Executing statement 4/8
+2025-03-12 16:45:13,256 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:45:13,256 - __main__ - INFO - Command: -- Insert default battery health configuration
+INSERT OR IGNORE INTO battery_health_config (
+    low...
+2025-03-12 16:45:13,256 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:45:13,257 - __main__ - INFO - Rows affected: 1
+2025-03-12 16:45:13,257 - __main__ - INFO - Executing statement 5/8
+2025-03-12 16:45:13,257 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:45:13,257 - __main__ - INFO - Command: -- Insert notification services (all disabled by default)
+INSERT OR IGNORE INTO notification_service...
+2025-03-12 16:45:13,257 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:45:13,257 - __main__ - INFO - Rows affected: 3
+2025-03-12 16:45:13,257 - __main__ - INFO - Executing statement 6/8
+2025-03-12 16:45:13,257 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:45:13,257 - __main__ - INFO - Command: -- Insert default triggers
+INSERT OR IGNORE INTO triggers (trigger_type, value) VALUES 
+('battery_le...
+2025-03-12 16:45:13,257 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:45:13,257 - __main__ - INFO - Rows affected: 4
+2025-03-12 16:45:13,258 - __main__ - INFO - Executing statement 7/8
+2025-03-12 16:45:13,258 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:45:13,258 - __main__ - INFO - Command: -- Insert default always notify events
+INSERT OR IGNORE INTO always_notify_events (trigger_id, event...
+2025-03-12 16:45:13,258 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:45:13,258 - __main__ - INFO - Rows affected: 4
+2025-03-12 16:45:13,258 - __main__ - INFO - Completed execution of SQL file: /Users/rion/z_code/power_snitch/install/defaults.sql
+2025-03-12 16:45:13,258 - __main__ - INFO - Total file execution time: 0.003 seconds
+2025-03-12 16:45:13,258 - __main__ - INFO - File execution stats: {'total_commands': 21, 'successful_commands': 21, 'failed_commands': 0, 'retried_commands': 0}
+2025-03-12 16:45:13,258 - __main__ - INFO - Table web_interface contains 1 rows
+2025-03-12 16:45:13,258 - __main__ - INFO - Table ups_config contains 1 rows
+2025-03-12 16:45:13,258 - __main__ - INFO - Table health_check contains 1 rows
+2025-03-12 16:45:13,258 - __main__ - INFO - Table battery_health_config contains 1 rows
+2025-03-12 16:45:13,259 - __main__ - INFO - Table notification_services contains 3 rows
+2025-03-12 16:45:13,259 - __main__ - INFO - Table triggers contains 4 rows
+2025-03-12 16:45:13,259 - __main__ - INFO - Database initialization completed successfully
+2025-03-12 16:45:13,259 - __main__ - INFO - Total initialization time: 0.014 seconds
+2025-03-12 16:45:13,259 - __main__ - INFO - Final statistics:
+2025-03-12 16:45:13,259 - __main__ - INFO - Total commands executed: 21
+2025-03-12 16:45:13,259 - __main__ - INFO - Successful commands: 21
+2025-03-12 16:45:13,259 - __main__ - INFO - Failed commands: 0
+2025-03-12 16:45:13,259 - __main__ - INFO - Retried commands: 0
+2025-03-12 16:45:13,259 - __main__ - INFO - Database sessions cleaned up
+2025-03-12 16:47:01,518 - __main__ - INFO - Starting database initialization process
+2025-03-12 16:47:01,518 - __main__ - INFO - Created database directory: .
+2025-03-12 16:47:01,524 - __main__ - INFO - Database initialized with SQLAlchemy models
+2025-03-12 16:47:01,524 - __main__ - INFO - Starting execution of SQL file: /Users/rion/z_code/power_snitch/install/tables.sql
+2025-03-12 16:47:01,525 - __main__ - INFO - Read SQL file content, length: 5734 bytes
+2025-03-12 16:47:01,526 - __main__ - INFO - Found 15 SQL statements to execute
+2025-03-12 16:47:01,527 - __main__ - INFO - Executing statement 1/15
+2025-03-12 16:47:01,527 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:47:01,527 - __main__ - INFO - Command: -- Power Snitch Database Schema
+-- ==========================
+
+-- Web Interface Settings
+CREATE TABL...
+2025-03-12 16:47:01,527 - __main__ - INFO - Execution time: 0.001 seconds
+2025-03-12 16:47:01,527 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:47:01,528 - __main__ - INFO - Executing statement 2/15
+2025-03-12 16:47:01,528 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:47:01,528 - __main__ - INFO - Command: -- UPS Configuration
+CREATE TABLE IF NOT EXISTS ups_config (
+    id INTEGER PRIMARY KEY,
+    name TE...
+2025-03-12 16:47:01,528 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:47:01,528 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:47:01,528 - __main__ - INFO - Executing statement 3/15
+2025-03-12 16:47:01,528 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:47:01,528 - __main__ - INFO - Command: -- Health Check Configuration
+CREATE TABLE IF NOT EXISTS health_check (
+    id INTEGER PRIMARY KEY,
+...
+2025-03-12 16:47:01,528 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:47:01,528 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:47:01,528 - __main__ - INFO - Executing statement 4/15
+2025-03-12 16:47:01,529 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:47:01,529 - __main__ - INFO - Command: -- Battery Health Configuration
+CREATE TABLE IF NOT EXISTS battery_health_config (
+    id INTEGER PR...
+2025-03-12 16:47:01,529 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:47:01,529 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:47:01,529 - __main__ - INFO - Executing statement 5/15
+2025-03-12 16:47:01,529 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:47:01,529 - __main__ - INFO - Command: -- Battery Health History
+CREATE TABLE IF NOT EXISTS battery_health_history (
+    id INTEGER PRIMARY...
+2025-03-12 16:47:01,529 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:47:01,529 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:47:01,529 - __main__ - INFO - Executing statement 6/15
+2025-03-12 16:47:01,529 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:47:01,529 - __main__ - INFO - Command: -- Battery Alerts
+CREATE TABLE IF NOT EXISTS battery_alerts (
+    id INTEGER PRIMARY KEY,
+    timest...
+2025-03-12 16:47:01,529 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:47:01,529 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:47:01,529 - __main__ - INFO - Executing statement 7/15
+2025-03-12 16:47:01,529 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:47:01,529 - __main__ - INFO - Command: -- Notification Services
+CREATE TABLE IF NOT EXISTS notification_services (
+    id INTEGER PRIMARY K...
+2025-03-12 16:47:01,529 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:47:01,529 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:47:01,529 - __main__ - INFO - Executing statement 8/15
+2025-03-12 16:47:01,529 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:47:01,530 - __main__ - INFO - Command: -- Webhook Configuration
+CREATE TABLE IF NOT EXISTS webhook_config (
+    id INTEGER PRIMARY KEY,
+   ...
+2025-03-12 16:47:01,530 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:47:01,530 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:47:01,530 - __main__ - INFO - Executing statement 9/15
+2025-03-12 16:47:01,530 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:47:01,530 - __main__ - INFO - Command: -- Email Configuration
+CREATE TABLE IF NOT EXISTS email_config (
+    id INTEGER PRIMARY KEY,
+    ser...
+2025-03-12 16:47:01,530 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:47:01,530 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:47:01,530 - __main__ - INFO - Executing statement 10/15
+2025-03-12 16:47:01,530 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:47:01,530 - __main__ - INFO - Command: -- Email Recipients
+CREATE TABLE IF NOT EXISTS email_recipients (
+    id INTEGER PRIMARY KEY,
+    em...
+2025-03-12 16:47:01,530 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:47:01,530 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:47:01,530 - __main__ - INFO - Executing statement 11/15
+2025-03-12 16:47:01,530 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:47:01,530 - __main__ - INFO - Command: -- SMS Configuration (Twilio)
+CREATE TABLE IF NOT EXISTS sms_config (
+    id INTEGER PRIMARY KEY,
+  ...
+2025-03-12 16:47:01,530 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:47:01,530 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:47:01,530 - __main__ - INFO - Executing statement 12/15
+2025-03-12 16:47:01,530 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:47:01,530 - __main__ - INFO - Command: -- SMS Recipients
+CREATE TABLE IF NOT EXISTS sms_recipients (
+    id INTEGER PRIMARY KEY,
+    sms_co...
+2025-03-12 16:47:01,530 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:47:01,530 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:47:01,530 - __main__ - INFO - Executing statement 13/15
+2025-03-12 16:47:01,530 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:47:01,530 - __main__ - INFO - Command: -- Notification Triggers
+CREATE TABLE IF NOT EXISTS triggers (
+    id INTEGER PRIMARY KEY,
+    trigg...
+2025-03-12 16:47:01,530 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:47:01,530 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:47:01,530 - __main__ - INFO - Executing statement 14/15
+2025-03-12 16:47:01,531 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:47:01,531 - __main__ - INFO - Command: -- Always Notify Events
+CREATE TABLE IF NOT EXISTS always_notify_events (
+    id INTEGER PRIMARY KEY...
+2025-03-12 16:47:01,531 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:47:01,531 - __main__ - INFO - Rows affected: -1
+2025-03-12 16:47:01,531 - __main__ - INFO - Completed execution of SQL file: /Users/rion/z_code/power_snitch/install/tables.sql
+2025-03-12 16:47:01,531 - __main__ - INFO - Total file execution time: 0.007 seconds
+2025-03-12 16:47:01,531 - __main__ - INFO - File execution stats: {'total_commands': 14, 'successful_commands': 14, 'failed_commands': 0, 'retried_commands': 0}
+2025-03-12 16:47:01,531 - __main__ - INFO - Verified table exists: web_interface
+2025-03-12 16:47:01,531 - __main__ - INFO - Verified table exists: ups_config
+2025-03-12 16:47:01,531 - __main__ - INFO - Verified table exists: health_check
+2025-03-12 16:47:01,532 - __main__ - INFO - Verified table exists: battery_health_config
+2025-03-12 16:47:01,532 - __main__ - INFO - Verified table exists: battery_health_history
+2025-03-12 16:47:01,532 - __main__ - INFO - Verified table exists: battery_alerts
+2025-03-12 16:47:01,532 - __main__ - INFO - Verified table exists: notification_services
+2025-03-12 16:47:01,532 - __main__ - INFO - Verified table exists: webhook_config
+2025-03-12 16:47:01,532 - __main__ - INFO - Verified table exists: email_config
+2025-03-12 16:47:01,532 - __main__ - INFO - Verified table exists: email_recipients
+2025-03-12 16:47:01,532 - __main__ - INFO - Verified table exists: sms_config
+2025-03-12 16:47:01,533 - __main__ - INFO - Verified table exists: sms_recipients
+2025-03-12 16:47:01,533 - __main__ - INFO - Verified table exists: triggers
+2025-03-12 16:47:01,533 - __main__ - INFO - Verified table exists: always_notify_events
+2025-03-12 16:47:01,533 - __main__ - INFO - Starting execution of SQL file: /Users/rion/z_code/power_snitch/install/defaults.sql
+2025-03-12 16:47:01,533 - __main__ - INFO - Read SQL file content, length: 1451 bytes
+2025-03-12 16:47:01,533 - __main__ - INFO - Found 8 SQL statements to execute
+2025-03-12 16:47:01,533 - __main__ - INFO - Executing statement 1/8
+2025-03-12 16:47:01,534 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:47:01,534 - __main__ - INFO - Command: -- Insert default UPS configuration
+INSERT OR IGNORE INTO ups_config (name, description, poll_interv...
+2025-03-12 16:47:01,534 - __main__ - INFO - Execution time: 0.001 seconds
+2025-03-12 16:47:01,534 - __main__ - INFO - Rows affected: 1
+2025-03-12 16:47:01,534 - __main__ - INFO - Executing statement 2/8
+2025-03-12 16:47:01,534 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:47:01,535 - __main__ - INFO - Command: -- Insert default web interface settings with bcrypt hashed password "password"
+INSERT OR IGNORE INT...
+2025-03-12 16:47:01,535 - __main__ - INFO - Execution time: 0.001 seconds
+2025-03-12 16:47:01,535 - __main__ - INFO - Rows affected: 1
+2025-03-12 16:47:01,535 - __main__ - INFO - Executing statement 3/8
+2025-03-12 16:47:01,535 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:47:01,535 - __main__ - INFO - Command: -- Insert default health check configuration
+INSERT OR IGNORE INTO health_check (enabled, notificati...
+2025-03-12 16:47:01,535 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:47:01,535 - __main__ - INFO - Rows affected: 1
+2025-03-12 16:47:01,535 - __main__ - INFO - Executing statement 4/8
+2025-03-12 16:47:01,536 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:47:01,536 - __main__ - INFO - Command: -- Insert default battery health configuration
+INSERT OR IGNORE INTO battery_health_config (
+    low...
+2025-03-12 16:47:01,536 - __main__ - INFO - Execution time: 0.000 seconds
+2025-03-12 16:47:01,536 - __main__ - INFO - Rows affected: 1
+2025-03-12 16:47:01,536 - __main__ - INFO - Executing statement 5/8
+2025-03-12 16:47:01,536 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:47:01,536 - __main__ - INFO - Command: -- Insert notification services (all disabled by default)
+INSERT OR IGNORE INTO notification_service...
+2025-03-12 16:47:01,536 - __main__ - INFO - Execution time: 0.001 seconds
+2025-03-12 16:47:01,536 - __main__ - INFO - Rows affected: 3
+2025-03-12 16:47:01,536 - __main__ - INFO - Executing statement 6/8
+2025-03-12 16:47:01,537 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:47:01,537 - __main__ - INFO - Command: -- Insert default triggers
+INSERT OR IGNORE INTO triggers (trigger_type, value) VALUES 
+('battery_le...
+2025-03-12 16:47:01,537 - __main__ - INFO - Execution time: 0.001 seconds
+2025-03-12 16:47:01,537 - __main__ - INFO - Rows affected: 4
+2025-03-12 16:47:01,537 - __main__ - INFO - Executing statement 7/8
+2025-03-12 16:47:01,538 - __main__ - INFO - Successfully executed SQL command (attempt 1/3)
+2025-03-12 16:47:01,538 - __main__ - INFO - Command: -- Insert default always notify events
+INSERT OR IGNORE INTO always_notify_events (trigger_id, event...
+2025-03-12 16:47:01,538 - __main__ - INFO - Execution time: 0.001 seconds
+2025-03-12 16:47:01,538 - __main__ - INFO - Rows affected: 4
+2025-03-12 16:47:01,538 - __main__ - INFO - Completed execution of SQL file: /Users/rion/z_code/power_snitch/install/defaults.sql
+2025-03-12 16:47:01,538 - __main__ - INFO - Total file execution time: 0.005 seconds
+2025-03-12 16:47:01,538 - __main__ - INFO - File execution stats: {'total_commands': 21, 'successful_commands': 21, 'failed_commands': 0, 'retried_commands': 0}
+2025-03-12 16:47:01,538 - __main__ - INFO - Table web_interface contains 1 rows
+2025-03-12 16:47:01,538 - __main__ - INFO - Table ups_config contains 1 rows
+2025-03-12 16:47:01,539 - __main__ - INFO - Table health_check contains 1 rows
+2025-03-12 16:47:01,539 - __main__ - INFO - Table battery_health_config contains 1 rows
+2025-03-12 16:47:01,539 - __main__ - INFO - Table notification_services contains 3 rows
+2025-03-12 16:47:01,539 - __main__ - INFO - Table triggers contains 4 rows
+2025-03-12 16:47:01,539 - __main__ - INFO - Database initialization completed successfully
+2025-03-12 16:47:01,539 - __main__ - INFO - Total initialization time: 0.021 seconds
+2025-03-12 16:47:01,539 - __main__ - INFO - Final statistics:
+2025-03-12 16:47:01,539 - __main__ - INFO - Total commands executed: 21
+2025-03-12 16:47:01,539 - __main__ - INFO - Successful commands: 21
+2025-03-12 16:47:01,539 - __main__ - INFO - Failed commands: 0
+2025-03-12 16:47:01,539 - __main__ - INFO - Retried commands: 0
+2025-03-12 16:47:01,539 - __main__ - INFO - Database sessions cleaned up

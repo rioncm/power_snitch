@@ -1,162 +1,172 @@
-{% extends "base.html" %}
-
-{% block title %}Settings - Power Snitch{% endblock %}
-
-{% block content %}
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h4 class="mb-0">Settings</h4>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Power Snitch - Settings</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="settings-container">
+        <nav class="navbar">
+            <h1>Power Snitch</h1>
+            <div class="nav-links">
+                <a href="{{ url_for('index') }}">Dashboard</a>
+                <a href="{{ url_for('settings') }}" class="active">Settings</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
             </div>
-            <div class="card-body">
-                <form method="POST" class="needs-validation" novalidate>
-                    <!-- Web Interface Settings -->
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h5 class="mb-0">Web Interface Settings</h5>
+        </nav>
+
+        <div class="main-content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('settings') }}">
+                <!-- Web Interface Settings -->
+                <div class="settings-section">
+                    <h2>Web Interface</h2>
+                    <div class="form-group">
+                        <label for="web_port">Port</label>
+                        <input type="number" id="web_port" name="web_interface[port]" value="{{ config.web_interface.port }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="web_password">Password (leave blank to keep current)</label>
+                        <input type="password" id="web_password" name="web_interface[password]">
+                    </div>
+                </div>
+
+                <!-- UPS Settings -->
+                <div class="settings-section">
+                    <h2>UPS Configuration</h2>
+                    <div class="form-group">
+                        <label for="ups_name">UPS Name</label>
+                        <input type="text" id="ups_name" name="ups[name]" value="{{ config.ups.name }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ups_description">Description</label>
+                        <input type="text" id="ups_description" name="ups[description]" value="{{ config.ups.description }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="ups_poll_interval">Poll Interval (seconds)</label>
+                        <input type="number" id="ups_poll_interval" name="ups[poll_interval]" value="{{ config.ups.poll_interval }}" required>
+                    </div>
+                </div>
+
+                <!-- Notification Settings -->
+                <div class="settings-section">
+                    <h2>Notifications</h2>
+                    
+                    <!-- Webhook -->
+                    <div class="notification-group">
+                        <h3>Webhook</h3>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" name="notifications[webhook][enabled]" {% if config.notifications.webhook.enabled %}checked{% endif %}>
+                                Enable Webhook
+                            </label>
                         </div>
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <label for="web_port" class="form-label">Web Interface Port</label>
-                                <input type="number" class="form-control" id="web_port" name="web_interface[port]" value="{{ config.web_interface.port }}" required>
+                        <div class="webhook-settings" {% if not config.notifications.webhook.enabled %}style="display: none;"{% endif %}>
+                            <div class="form-group">
+                                <label for="webhook_url">URL</label>
+                                <input type="url" id="webhook_url" name="notifications[webhook][url]" value="{{ config.notifications.webhook.url }}">
                             </div>
-                            <div class="mb-3">
-                                <label for="web_password" class="form-label">New Password</label>
-                                <input type="password" class="form-control" id="web_password" name="web_interface[password]">
-                                <div class="form-text">Leave blank to keep current password</div>
+                            <div class="form-group">
+                                <label for="webhook_method">Method</label>
+                                <select id="webhook_method" name="notifications[webhook][method]">
+                                    <option value="POST" {% if config.notifications.webhook.method == 'POST' %}selected{% endif %}>POST</option>
+                                    <option value="GET" {% if config.notifications.webhook.method == 'GET' %}selected{% endif %}>GET</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="webhook_timeout">Timeout (seconds)</label>
+                                <input type="number" id="webhook_timeout" name="notifications[webhook][timeout]" value="{{ config.notifications.webhook.timeout }}">
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- UPS Configuration -->
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h5 class="mb-0">UPS Configuration</h5>
+
+                    <!-- Email -->
+                    <div class="notification-group">
+                        <h3>Email</h3>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" name="notifications[email][enabled]" {% if config.notifications.email.enabled %}checked{% endif %}>
+                                Enable Email
+                            </label>
                         </div>
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <label for="ups_name" class="form-label">UPS Name</label>
-                                <input type="text" class="form-control" id="ups_name" name="ups[name]" value="{{ config.ups.name }}" required>
+                        <div class="email-settings" {% if not config.notifications.email.enabled %}style="display: none;"{% endif %}>
+                            <div class="form-group">
+                                <label for="smtp_host">SMTP Host</label>
+                                <input type="text" id="smtp_host" name="notifications[email][smtp][host]" value="{{ config.notifications.email.smtp_host }}">
                             </div>
-                            <div class="mb-3">
-                                <label for="ups_description" class="form-label">UPS Description</label>
-                                <input type="text" class="form-control" id="ups_description" name="ups[description]" value="{{ config.ups.description }}">
+                            <div class="form-group">
+                                <label for="smtp_port">SMTP Port</label>
+                                <input type="number" id="smtp_port" name="notifications[email][smtp][port]" value="{{ config.notifications.email.smtp_port }}">
                             </div>
-                            <div class="mb-3">
-                                <label for="ups_poll_interval" class="form-label">Poll Interval (seconds)</label>
-                                <input type="number" class="form-control" id="ups_poll_interval" name="ups[poll_interval]" value="{{ config.ups.poll_interval }}" required>
+                            <div class="form-group">
+                                <label for="smtp_username">SMTP Username</label>
+                                <input type="text" id="smtp_username" name="notifications[email][smtp][username]" value="{{ config.notifications.email.smtp_username }}">
                             </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Notification Settings -->
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h5 class="mb-0">Notification Settings</h5>
-                        </div>
-                        <div class="card-body">
-                            <!-- Webhook -->
-                            <div class="mb-4">
-                                <h6>Webhook</h6>
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input" type="checkbox" id="webhook_enabled" name="notifications[webhook][enabled]" {% if config.notifications.webhook.enabled %}checked{% endif %}>
-                                    <label class="form-check-label" for="webhook_enabled">Enable Webhook Notifications</label>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="webhook_url" class="form-label">Webhook URL</label>
-                                    <input type="url" class="form-control" id="webhook_url" name="notifications[webhook][url]" value="{{ config.notifications.webhook.url }}">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="webhook_method" class="form-label">HTTP Method</label>
-                                    <select class="form-select" id="webhook_method" name="notifications[webhook][method]">
-                                        <option value="POST" {% if config.notifications.webhook.method == 'POST' %}selected{% endif %}>POST</option>
-                                        <option value="PUT" {% if config.notifications.webhook.method == 'PUT' %}selected{% endif %}>PUT</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="webhook_timeout" class="form-label">Timeout (seconds)</label>
-                                    <input type="number" class="form-control" id="webhook_timeout" name="notifications[webhook][timeout]" value="{{ config.notifications.webhook.timeout }}">
-                                </div>
+                            <div class="form-group">
+                                <label for="smtp_password">SMTP Password</label>
+                                <input type="password" id="smtp_password" name="notifications[email][smtp][password]">
                             </div>
-                            
-                            <!-- Email -->
-                            <div class="mb-4">
-                                <h6>Email</h6>
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input" type="checkbox" id="email_enabled" name="notifications[email][enabled]" {% if config.notifications.email.enabled %}checked{% endif %}>
-                                    <label class="form-check-label" for="email_enabled">Enable Email Notifications</label>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="smtp_host" class="form-label">SMTP Host</label>
-                                    <input type="text" class="form-control" id="smtp_host" name="notifications[email][smtp][host]" value="{{ config.notifications.email.smtp.host }}">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="smtp_port" class="form-label">SMTP Port</label>
-                                    <input type="number" class="form-control" id="smtp_port" name="notifications[email][smtp][port]" value="{{ config.notifications.email.smtp.port }}">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="smtp_username" class="form-label">SMTP Username</label>
-                                    <input type="text" class="form-control" id="smtp_username" name="notifications[email][smtp][username]" value="{{ config.notifications.email.smtp.username }}">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="smtp_password" class="form-label">SMTP Password</label>
-                                    <input type="password" class="form-control" id="smtp_password" name="notifications[email][smtp][password]">
-                                    <div class="form-text">Leave blank to keep current password</div>
-                                </div>
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" id="smtp_tls" name="notifications[email][smtp][use_tls]" {% if config.notifications.email.smtp.use_tls %}checked{% endif %}>
-                                    <label class="form-check-label" for="smtp_tls">Use TLS</label>
-                                </div>
-                            </div>
-                            
-                            <!-- SMS -->
-                            <div class="mb-4">
-                                <h6>SMS (Twilio)</h6>
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input" type="checkbox" id="sms_enabled" name="notifications[sms][enabled]" {% if config.notifications.sms.enabled %}checked{% endif %}>
-                                    <label class="form-check-label" for="sms_enabled">Enable SMS Notifications</label>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="twilio_sid" class="form-label">Twilio Account SID</label>
-                                    <input type="text" class="form-control" id="twilio_sid" name="notifications[sms][twilio][account_sid]" value="{{ config.notifications.sms.twilio.account_sid }}">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="twilio_token" class="form-label">Twilio Auth Token</label>
-                                    <input type="password" class="form-control" id="twilio_token" name="notifications[sms][twilio][auth_token]">
-                                    <div class="form-text">Leave blank to keep current token</div>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="twilio_number" class="form-label">Twilio From Number</label>
-                                    <input type="text" class="form-control" id="twilio_number" name="notifications[sms][twilio][from_number]" value="{{ config.notifications.sms.twilio.from_number }}">
-                                </div>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" name="notifications[email][smtp][use_tls]" {% if config.notifications.email.smtp_use_tls %}checked{% endif %}>
+                                    Use TLS
+                                </label>
                             </div>
                         </div>
                     </div>
-                    
+
+                    <!-- SMS -->
+                    <div class="notification-group">
+                        <h3>SMS (Twilio)</h3>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" name="notifications[sms][enabled]" {% if config.notifications.sms.enabled %}checked{% endif %}>
+                                Enable SMS
+                            </label>
+                        </div>
+                        <div class="sms-settings" {% if not config.notifications.sms.enabled %}style="display: none;"{% endif %}>
+                            <div class="form-group">
+                                <label for="twilio_account_sid">Account SID</label>
+                                <input type="text" id="twilio_account_sid" name="notifications[sms][twilio][account_sid]" value="{{ config.notifications.sms.account_sid }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="twilio_auth_token">Auth Token</label>
+                                <input type="password" id="twilio_auth_token" name="notifications[sms][twilio][auth_token]">
+                            </div>
+                            <div class="form-group">
+                                <label for="twilio_from_number">From Number</label>
+                                <input type="text" id="twilio_from_number" name="notifications[sms][twilio][from_number]" value="{{ config.notifications.sms.from_number }}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
                     <button type="submit" class="btn btn-primary">Save Settings</button>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     </div>
-</div>
-{% endblock %}
 
-{% block extra_js %}
-<script>
-    // Form validation
-    (function () {
-        'use strict'
-        var forms = document.querySelectorAll('.needs-validation')
-        Array.prototype.slice.call(forms).forEach(function (form) {
-            form.addEventListener('submit', function (event) {
-                if (!form.checkValidity()) {
-                    event.preventDefault()
-                    event.stopPropagation()
+    <script>
+        // Toggle notification settings visibility
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const settingsDiv = this.closest('.notification-group').querySelector('div[class$="-settings"]');
+                if (settingsDiv) {
+                    settingsDiv.style.display = this.checked ? 'block' : 'none';
                 }
-                form.classList.add('was-validated')
-            }, false)
-        })
-    })()
-</script>
-{% endblock %} 
+            });
+        });
+    </script>
+</body>
+</html> 
