@@ -12,7 +12,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, jso
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, IntegerField, BooleanField, URLField, SelectField, TextAreaField
+from wtforms import StringField, PasswordField, IntegerField, BooleanField, URLField, SelectField, TextAreaField, FloatField
 from wtforms.validators import DataRequired, NumberRange, URL, Email, Optional
 from db import Database
 import re
@@ -86,22 +86,39 @@ def index():
         # Get battery health history
         battery_history = db.get_battery_health_history(limit=24)  # Last 24 records
         timestamps = [record.timestamp.strftime('%Y-%m-%d %H:%M:%S') for record in battery_history]
-        charges = [record.charge for record in battery_history]
+        charges = [record.charge_percentage for record in battery_history]
+        
+        # Get the most recent battery health record for current status
+        current_battery = battery_history[0] if battery_history else None
 
         # Get recent alerts
         alerts = db.get_recent_alerts(limit=10)
 
+        # Get notification service status
+        notifications = {
+            'webhook': db.get_webhook_config(),
+            'email': db.get_email_config(),
+            'sms': db.get_sms_config()
+        }
+
         return render_template('dashboard.html',
                              status=status,
-                             battery_history={'timestamps': timestamps, 'charges': charges},
-                             alerts=alerts)
+                             battery_history={
+                                 'timestamps': timestamps,
+                                 'charges': charges,
+                                 'energy_stored': current_battery.energy_stored if current_battery else 0,
+                                 'energy_full': current_battery.energy_full if current_battery else 0
+                             },
+                             alerts=alerts,
+                             notifications=notifications)
     except Exception as e:
         logger.error(f"Error rendering dashboard: {str(e)}")
         flash('Error loading dashboard data', 'error')
         return render_template('dashboard.html',
                              status={},
                              battery_history={'timestamps': [], 'charges': []},
-                             alerts=[])
+                             alerts=[],
+                             notifications={'webhook': None, 'email': None, 'sms': None})
 
 @app.route('/settings', methods=['GET', 'POST'])
 @login_required
@@ -113,7 +130,7 @@ def settings():
             web_interface = request.form.get('web_interface', {})
             if web_interface.get('password'):
                 db.update_web_interface(
-                    port=int(web_interface.get('port', 5000)),
+                    port=int(web_interface.get('port', 80)),
                     password=web_interface.get('password')
                 )
             else:
@@ -126,7 +143,7 @@ def settings():
             if ups:
                 # Extract NUT-specific fields
                 nut_fields = {
-                    'nut_device_name': ups.get('nut_device_name'),
+                    'nut_device_name': ups.get('ups_name'),
                     'nut_driver': ups.get('nut_driver'),
                     'nut_port': ups.get('nut_port'),
                     'nut_username': ups.get('nut_username'),
@@ -137,9 +154,9 @@ def settings():
                 
                 # Update UPS configuration with NUT fields
                 db.update_ups_config(
-                    name=ups.get('name'),
-                    description=ups.get('description'),
-                    poll_interval=int(ups.get('poll_interval', 60)),
+                    name=ups.get('ups_name'),
+                    description=ups.get('ups_description'),
+                    poll_interval=int(ups.get('ups_poll_interval', 60)),
                     **nut_fields
                 )
 
@@ -150,9 +167,9 @@ def settings():
             webhook = notifications.get('webhook', {})
             if webhook.get('enabled'):
                 db.update_webhook_config(
-                    url=webhook.get('url'),
-                    method=webhook.get('method', 'POST'),
-                    timeout=int(webhook.get('timeout', 30))
+                    url=webhook.get('webhook_url'),
+                    method=webhook.get('webhook_method', 'POST'),
+                    timeout=int(webhook.get('webhook_timeout', 30))
                 )
             else:
                 db.disable_webhook()
@@ -162,11 +179,11 @@ def settings():
             if email.get('enabled'):
                 smtp = email.get('smtp', {})
                 db.update_email_config(
-                    smtp_host=smtp.get('host'),
-                    smtp_port=int(smtp.get('port', 587)),
-                    smtp_username=smtp.get('username'),
-                    smtp_password=smtp.get('password'),
-                    smtp_use_tls=smtp.get('use_tls') == 'on'
+                    smtp_host=email.get('email_smtp_host'),
+                    smtp_port=int(email.get('email_smtp_port', 587)),
+                    smtp_username=email.get('email_smtp_username'),
+                    smtp_password=email.get('email_smtp_password'),
+                    smtp_use_tls=email.get('email_smtp_use_tls') == 'on'
                 )
             else:
                 db.disable_email()
@@ -176,9 +193,9 @@ def settings():
             if sms.get('enabled'):
                 twilio = sms.get('twilio', {})
                 db.update_sms_config(
-                    account_sid=twilio.get('account_sid'),
-                    auth_token=twilio.get('auth_token'),
-                    from_number=twilio.get('from_number')
+                    account_sid=sms.get('sms_account_sid'),
+                    auth_token=sms.get('sms_auth_token'),
+                    from_number=sms.get('sms_from_number')
                 )
             else:
                 db.disable_sms()
@@ -233,7 +250,9 @@ class SetupForm(FlaskForm):
         validators=[Optional()])
 
     # UPS Configuration
-    ups_name = StringField('Name', validators=[DataRequired()])
+    ups_name = StringField('Name', 
+        description="Name of the UPS device (used for both Power Snitch and NUT configuration)",
+        validators=[DataRequired()])
     ups_description = StringField('Description')
     ups_poll_interval = IntegerField('Poll Interval', validators=[
         DataRequired(),
@@ -241,14 +260,11 @@ class SetupForm(FlaskForm):
     ])
 
     # NUT Configuration
-    nut_device_name = StringField('Device Name', 
-        description="Name of the UPS device in NUT configuration",
-        validators=[DataRequired()])
     nut_driver = StringField('Driver', 
         description="NUT driver to use (e.g., usbhid-ups, blazer_ser)",
         validators=[DataRequired()])
     nut_port = StringField('Port', 
-        description="Device port (e.g., auto, /dev/ttyUSB0)",
+        description="Device port (e.g., /dev/usb/hiddev0, auto)",
         validators=[DataRequired()])
     nut_username = StringField('Username', 
         description="NUT server username",
@@ -258,12 +274,16 @@ class SetupForm(FlaskForm):
         validators=[DataRequired()])
     nut_retry_count = IntegerField('Retry Count', 
         description="Number of connection retries",
-        validators=[DataRequired(), NumberRange(min=1, max=10)],
-        default=3)
-    nut_retry_delay = IntegerField('Retry Delay (seconds)', 
-        description="Delay between connection retries",
-        validators=[DataRequired(), NumberRange(min=1, max=60)],
-        default=5)
+        validators=[
+            DataRequired(),
+            NumberRange(min=1, max=10, message='Retry count must be between 1 and 10')
+        ])
+    nut_retry_delay = IntegerField('Retry Delay', 
+        description="Delay between connection retries (seconds)",
+        validators=[
+            DataRequired(),
+            NumberRange(min=1, max=60, message='Retry delay must be between 1 and 60 seconds')
+        ])
 
     # Webhook Settings
     webhook_enabled = BooleanField('Enable Webhook')
@@ -276,7 +296,7 @@ class SetupForm(FlaskForm):
     webhook_timeout = IntegerField('Timeout', 
         description="Maximum time to wait for webhook response (seconds)",
         validators=[Optional(), NumberRange(min=1)])
-    webhook_headers = TextAreaField('Headers',
+    webhook_headers = TextAreaField('Headers', 
         description="JSON object of headers to send with webhook (e.g., {\"Authorization\": \"Bearer token\"})",
         validators=[Optional()])
 
@@ -308,16 +328,17 @@ class SetupForm(FlaskForm):
         description="Your Twilio Auth Token")
     sms_from_number = StringField('From Number',
         description="Your Twilio phone number")
+    sms_recipients = StringField('Recipients',
+        description="Comma-separated list of phone numbers")
 
     def validate(self):
         if not super().validate():
             return False
 
         # Validate NUT configuration
-        if not all([self.nut_device_name.data, self.nut_driver.data, 
-                   self.nut_port.data, self.nut_username.data, 
-                   self.nut_password.data]):
-            self.nut_device_name.errors.append('All NUT settings are required')
+        if not all([self.nut_driver.data, self.nut_port.data, 
+                   self.nut_username.data, self.nut_password.data]):
+            self.nut_driver.errors.append('All NUT settings are required')
             return False
 
         # Validate email settings if enabled
@@ -373,22 +394,22 @@ def setup():
         form.web_interface_port.data = config['web_interface'].port
         logger.debug(f"Web interface port set to: {form.web_interface_port.data}")
         
-        # Populate UPS settings
-        form.ups_name.data = config['ups'].name
-        form.ups_description.data = config['ups'].description
-        form.ups_poll_interval.data = config['ups'].poll_interval
-        logger.debug(f"UPS settings populated: name={form.ups_name.data}, poll_interval={form.ups_poll_interval.data}")
-        
-        # Populate NUT settings
-        nut_config = config['ups']
-        form.nut_device_name.data = nut_config.name
-        form.nut_driver.data = nut_config.driver
-        form.nut_port.data = nut_config.port
-        form.nut_username.data = nut_config.username
-        form.nut_password.data = nut_config.password
-        form.nut_retry_count.data = nut_config.retry_count
-        form.nut_retry_delay.data = nut_config.retry_delay
-        logger.debug(f"NUT settings populated: device_name={form.nut_device_name.data}, driver={form.nut_driver.data}, port={form.nut_port.data}, username={form.nut_username.data}")
+        # Populate UPS configuration from database
+        if config['ups']:
+            form.ups_name.data = config['ups'].name
+            form.ups_description.data = config['ups'].description
+            form.ups_poll_interval.data = config['ups'].poll_interval
+            form.nut_driver.data = config['ups'].nut_driver
+            form.nut_port.data = config['ups'].nut_port
+            form.nut_username.data = config['ups'].nut_username
+            form.nut_password.data = config['ups'].nut_password
+            form.nut_retry_count.data = config['ups'].nut_retry_count
+            form.nut_retry_delay.data = config['ups'].nut_retry_delay
+            logger.debug(f"Using existing UPS configuration")
+        else:
+            logger.error("No UPS configuration found in database")
+            flash('Error: No UPS configuration found', 'error')
+            return redirect(url_for('index'))
         
         # Populate webhook settings
         webhook_config = config['notifications']['webhook']
@@ -421,9 +442,9 @@ def setup():
         logger.debug(f"SMS enabled: {form.sms_enabled.data}")
         if sms_config:
             form.sms_account_sid.data = sms_config.account_sid
+            form.sms_auth_token.data = sms_config.auth_token
             form.sms_from_number.data = sms_config.from_number
-            if hasattr(sms_config, 'auth_token') and sms_config.auth_token:
-                form.sms_auth_token.data = "********"
+            form.sms_recipients.data = ','.join(sms_config.recipients)
             logger.debug(f"SMS settings populated: account_sid={form.sms_account_sid.data}")
 
     if request.method == 'POST':
@@ -453,12 +474,12 @@ def setup():
                     name=form.ups_name.data,
                     description=form.ups_description.data,
                     poll_interval=form.ups_poll_interval.data,
-                    driver=form.nut_driver.data,
-                    port=form.nut_port.data,
-                    username=form.nut_username.data,
-                    password=form.nut_password.data,
-                    retry_count=form.nut_retry_count.data,
-                    retry_delay=form.nut_retry_delay.data
+                    nut_driver=form.nut_driver.data,
+                    nut_port=form.nut_port.data,
+                    nut_username=form.nut_username.data,
+                    nut_password=form.nut_password.data,
+                    nut_retry_count=form.nut_retry_count.data,
+                    nut_retry_delay=form.nut_retry_delay.data
                 )
 
                 # Update notification settings
@@ -474,15 +495,15 @@ def setup():
                             form.webhook_headers.errors.append('Invalid JSON format')
                             return render_template('setup.html', form=form, config=config)
                     
-                    db.update_webhook_config(
-                        url=form.webhook_url.data,
-                        method=form.webhook_method.data,
-                        timeout=form.webhook_timeout.data,
-                        headers=headers
-                    )
+                    db.update_notification_service('webhook', enabled=True, webhook_config={
+                        'url': form.webhook_url.data,
+                        'method': form.webhook_method.data,
+                        'timeout': form.webhook_timeout.data,
+                        'headers': headers
+                    })
                 else:
                     logger.debug("Disabling webhook")
-                    db.disable_webhook()
+                    db.update_notification_service('webhook', enabled=False)
 
                 if form.email_enabled.data:
                     logger.debug("Processing email configuration")
@@ -503,23 +524,24 @@ def setup():
                         flash(error_msg, 'error')
                         return render_template('setup.html', form=form, config=config)
                     logger.debug("Email validation passed")
-                    db.update_email_config(email_config)
+                    db.update_notification_service('email', enabled=True, email_config=email_config)
                 else:
                     logger.debug("Disabling email")
-                    db.disable_email()
+                    db.update_notification_service('email', enabled=False)
 
                 if form.sms_enabled.data:
                     logger.debug("Processing SMS configuration")
                     sms_config = {
                         'account_sid': form.sms_account_sid.data,
                         'auth_token': form.sms_auth_token.data if form.sms_auth_token.data != "********" else None,
-                        'from_number': form.sms_from_number.data
+                        'from_number': form.sms_from_number.data,
+                        'recipients': form.sms_recipients.data.split(',')
                     }
                     logger.debug(f"SMS config prepared: {json.dumps({k: v for k, v in sms_config.items() if k != 'auth_token'})}")
-                    db.update_sms_config(sms_config)
+                    db.update_notification_service('sms', enabled=True, sms_config=sms_config)
                 else:
                     logger.debug("Disabling SMS")
-                    db.disable_sms()
+                    db.update_notification_service('sms', enabled=False)
 
                 logger.info("Setup completed successfully")
                 flash('Setup completed successfully', 'success')
@@ -554,6 +576,197 @@ def get_status():
     except Exception as e:
         logger.error(f"Error getting status: {str(e)}")
         return jsonify({'error': str(e)})
+
+@app.route('/api/settings/web_interface', methods=['POST'])
+@login_required
+def update_web_interface_settings():
+    """Handle AJAX web interface settings update."""
+    try:
+        port = request.form.get('web_interface_port')
+        password = request.form.get('web_interface_password')
+        
+        if not port:
+            return jsonify({'success': False, 'error': 'Port is required'}), 400
+            
+        # Update web interface settings
+        if password:
+            password_hash = generate_password_hash(password)
+            db.update_web_interface(
+                port=int(port),
+                password_hash=password_hash
+            )
+        else:
+            db.update_web_interface(
+                port=int(port)
+            )
+            
+        return jsonify({'success': True, 'message': 'Web interface settings updated successfully'})
+    except Exception as e:
+        logger.error(f"Error updating web interface settings: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/settings/ups', methods=['POST'])
+@login_required
+def update_ups_settings():
+    """Handle AJAX UPS settings update."""
+    try:
+        # Extract NUT-specific fields
+        nut_fields = {
+            'nut_device_name': request.form.get('ups_name'),
+            'nut_driver': request.form.get('nut_driver'),
+            'nut_port': request.form.get('nut_port'),
+            'nut_username': request.form.get('nut_username'),
+            'nut_password': request.form.get('nut_password'),
+            'nut_retry_count': int(request.form.get('nut_retry_count', 3)),
+            'nut_retry_delay': int(request.form.get('nut_retry_delay', 5))
+        }
+        
+        # Update UPS configuration with NUT fields
+        db.update_ups_config(
+            name=request.form.get('ups_name'),
+            description=request.form.get('ups_description'),
+            poll_interval=int(request.form.get('ups_poll_interval', 60)),
+            **nut_fields
+        )
+            
+        return jsonify({'success': True, 'message': 'UPS settings updated successfully'})
+    except Exception as e:
+        logger.error(f"Error updating UPS settings: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/settings/webhook', methods=['POST'])
+@login_required
+def update_webhook_settings():
+    try:
+        # Get form data
+        enabled = request.form.get('webhook_enabled') == 'on'
+        url = request.form.get('webhook_url')
+        method = request.form.get('webhook_method', 'POST')
+        timeout = int(request.form.get('webhook_timeout', 10))
+        headers = request.form.get('webhook_headers', '{}')
+        
+        # Validate headers JSON
+        try:
+            headers_dict = json.loads(headers)
+        except json.JSONDecodeError:
+            return jsonify({
+                'success': False,
+                'error': 'Invalid headers format. Must be valid JSON.'
+            }), 400
+        
+        # Update webhook settings
+        config = Config.get_instance()
+        webhook_config = {
+            'enabled': enabled,
+            'url': url,
+            'method': method,
+            'timeout': timeout,
+            'headers': headers_dict
+        }
+        
+        config.set('notifications.webhook', webhook_config)
+        config.save()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Webhook settings updated successfully'
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/settings/email', methods=['POST'])
+@login_required
+def update_email_settings():
+    """Handle AJAX email settings update."""
+    try:
+        enabled = request.form.get('email_enabled') == 'on'
+        
+        if not enabled:
+            db.update_notification_service('email', enabled=False)
+            return jsonify({'success': True, 'message': 'Email notifications disabled successfully'})
+            
+        # Validate required fields
+        required_fields = ['email_smtp_host', 'email_smtp_port', 'email_smtp_username', 
+                         'email_from_email', 'email_recipients']
+        for field in required_fields:
+            if not request.form.get(field):
+                return jsonify({'success': False, 'error': f'{field} is required'}), 400
+        
+        # Validate email configuration
+        email_config = {
+            'smtp_host': request.form.get('email_smtp_host'),
+            'smtp_port': int(request.form.get('email_smtp_port')),
+            'smtp_username': request.form.get('email_smtp_username'),
+            'smtp_password': request.form.get('email_smtp_password'),
+            'use_tls': request.form.get('email_smtp_use_tls') == 'on',
+            'from_email': request.form.get('email_from_email'),
+            'recipients': request.form.get('email_recipients').split(',')
+        }
+        
+        is_valid, error_msg = validate_email_config(email_config)
+        if not is_valid:
+            return jsonify({'success': False, 'error': error_msg}), 400
+        
+        # Update email configuration
+        db.update_notification_service('email', enabled=True, email_config=email_config)
+            
+        return jsonify({'success': True, 'message': 'Email settings updated successfully'})
+    except Exception as e:
+        logger.error(f"Error updating email settings: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/settings/sms', methods=['POST'])
+@login_required
+def update_sms_settings():
+    """Handle AJAX SMS settings update."""
+    try:
+        enabled = request.form.get('sms_enabled') == 'on'
+        
+        if not enabled:
+            db.update_notification_service('sms', enabled=False)
+            return jsonify({'success': True, 'message': 'SMS notifications disabled successfully'})
+            
+        # Validate required fields
+        required_fields = ['sms_account_sid', 'sms_auth_token', 'sms_from_number']
+        for field in required_fields:
+            if not request.form.get(field):
+                return jsonify({'success': False, 'error': f'{field} is required'}), 400
+        
+        # Update SMS configuration
+        sms_config = {
+            'account_sid': request.form.get('sms_account_sid'),
+            'auth_token': request.form.get('sms_auth_token'),
+            'from_number': request.form.get('sms_from_number')
+        }
+        
+        db.update_notification_service('sms', enabled=True, sms_config=sms_config)
+            
+        return jsonify({'success': True, 'message': 'SMS settings updated successfully'})
+    except Exception as e:
+        logger.error(f"Error updating SMS settings: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/settings/complete', methods=['POST'])
+@login_required
+def complete_setup():
+    try:
+        # Update the completed flag in the database
+        config = Config.get_instance()
+        config.set('setup_completed', True)
+        config.save()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Setup completed successfully'
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
 
 def start_web_interface():
     """Start the web interface."""
@@ -599,15 +812,6 @@ def validate_email_config(config):
         return False, "Invalid SMTP port"
     
     # Validate from address
-    if not config.get('from_email'):
-        logger.error("From email address is missing")
-        return False, "From email address is required"
-    if not re.match(r'^[^@]+@[^@]+\.[^@]+$', config['from_email']):
-        logger.error(f"Invalid from email address: {config['from_email']}")
-        return False, "Invalid from email address"
-    logger.debug("From email validation passed")
-    
-    # Validate recipients
     if not config.get('recipients'):
         logger.error("Recipients list is missing")
         return False, "At least one recipient is required"
