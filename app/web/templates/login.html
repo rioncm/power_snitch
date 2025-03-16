@@ -16,15 +16,6 @@
                     <form method="POST" action="{{ url_for('auth.login') }}">
                         {{ form.csrf_token }}
                         <div class="mb-3">
-                            {{ form.username.label(class="form-label") }}
-                            {{ form.username(class="form-control") }}
-                            {% if form.username.errors %}
-                                {% for error in form.username.errors %}
-                                    <div class="text-danger small mt-1">{{ error }}</div>
-                                {% endfor %}
-                            {% endif %}
-                        </div>
-                        <div class="mb-3">
                             {{ form.password.label(class="form-label") }}
                             {{ form.password(class="form-control") }}
                             {% if form.password.errors %}
@@ -32,10 +23,6 @@
                                     <div class="text-danger small mt-1">{{ error }}</div>
                                 {% endfor %}
                             {% endif %}
-                        </div>
-                        <div class="mb-3 form-check">
-                            {{ form.remember_me(class="form-check-input") }}
-                            {{ form.remember_me.label(class="form-check-label") }}
                         </div>
                         {{ form.submit(class="btn btn-primary w-100") }}
                     </form>

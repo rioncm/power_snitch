@@ -20,13 +20,13 @@ class NotificationService(Base):
     __tablename__ = 'notification_services'
     
     id = Column(Integer, primary_key=True)
-    service_type = Column(String(20), CheckConstraint("service_type IN ('webhook', 'email', 'sms')"), nullable=False)
+    service_type = Column(String(20), CheckConstraint("service_type IN ('webhook', 'email', 'sms')"), nullable=False, unique=True)
     enabled = Column(Boolean, default=False)
-    last_test = Column(String)  # TEXT in SQLite
+    last_test = Column(String)
     last_test_status = Column(Boolean)
     last_test_message = Column(Text)
-    created_at = Column(String, nullable=False, default=func.current_timestamp())  # TEXT in SQLite
-    updated_at = Column(String, nullable=False, default=func.current_timestamp())  # TEXT in SQLite
+    created_at = Column(String, nullable=False, default=func.current_timestamp())
+    updated_at = Column(String, nullable=False, default=func.current_timestamp())
     
     __mapper_args__ = {
         'polymorphic_identity': 'notification_service',
@@ -36,12 +36,8 @@ class NotificationService(Base):
     def save(self):
         """Save notification service to database."""
         from web.extensions import db
-        session = db.get_session()
-        try:
+        with db.session_scope() as session:
             session.add(self)
-            session.commit()
-        finally:
-            session.close()
     
     def test(self):
         """Test the notification service."""
@@ -63,230 +59,144 @@ class NotificationService(Base):
         """Send a test notification. Must be implemented by subclasses."""
         raise NotImplementedError
 
-class WebhookService(NotificationService):
-    """Webhook notification service."""
+    @classmethod
+    def get_webhook_config(cls):
+        """Get webhook configuration."""
+        return WebhookConfig.get_config()
+    
+    @classmethod
+    def get_email_config(cls):
+        """Get email configuration."""
+        return EmailConfig.get_config()
+    
+    @classmethod
+    def get_sms_config(cls):
+        """Get SMS configuration."""
+        return SMSConfig.get_config()
+
+class WebhookConfig(Base):
+    """Webhook configuration."""
     
     __tablename__ = 'webhook_config'
     
-    id = Column(Integer, ForeignKey('notification_services.id', ondelete='CASCADE'), primary_key=True)
+    id = Column(Integer, primary_key=True)
+    service_id = Column(Integer, ForeignKey('notification_services.id'), nullable=False)
     url = Column(String(255), nullable=False)
     method = Column(String(10), CheckConstraint("method IN ('GET', 'POST', 'PUT', 'PATCH', 'DELETE')"), default='POST')
     timeout = Column(Integer, default=10)
     headers = Column(Text)
+    created_at = Column(String, nullable=False, default=func.current_timestamp())
+    updated_at = Column(String, nullable=False, default=func.current_timestamp())
     
-    __mapper_args__ = {
-        'polymorphic_identity': 'webhook'
-    }
+    # Relationship
+    service = relationship("NotificationService", backref="webhook_config")
     
-    def __init__(self):
-        """Initialize webhook service."""
-        super().__init__()
-        self.service_type = 'webhook'
-    
-    def _send_test_notification(self):
-        """Send a test webhook notification."""
-        if not self.enabled or not self.url:
-            return False
-        
-        headers = {}
-        if self.headers:
-            try:
-                headers = json.loads(self.headers)
-            except json.JSONDecodeError:
-                return False
-        
-        data = {
-            'type': 'test',
-            'timestamp': datetime.utcnow().isoformat(),
-            'message': 'Test notification from Power Snitch'
-        }
-        
-        try:
-            response = requests.request(
-                method=self.method,
-                url=self.url,
-                json=data,
-                headers=headers,
-                timeout=self.timeout
-            )
-            return response.status_code in (200, 201, 202)
-        except Exception:
-            return False
-    
-    def send_notification(self, data):
-        """Send a webhook notification."""
-        if not self.enabled or not self.url:
-            return False
-        
-        headers = {}
-        if self.headers:
-            try:
-                headers = json.loads(self.headers)
-            except json.JSONDecodeError:
-                return False
-        
-        try:
-            response = requests.request(
-                method=self.method,
-                url=self.url,
-                json=data,
-                headers=headers,
-                timeout=self.timeout
-            )
-            return response.status_code in (200, 201, 202)
-        except Exception:
-            return False
+    @classmethod
+    def get_config(cls):
+        """Get webhook configuration."""
+        from web.extensions import db
+        with db.session_scope() as session:
+            service = session.query(NotificationService).filter_by(service_type='webhook').first()
+            if not service:
+                service = NotificationService(service_type='webhook')
+                session.add(service)
+                session.flush()
+            
+            config = session.query(cls).filter_by(service_id=service.id).first()
+            if not config:
+                config = cls(service_id=service.id)
+                session.add(config)
+            
+            return config
 
-class EmailService(NotificationService):
-    """Email notification service."""
+class EmailConfig(Base):
+    """Email configuration."""
     
     __tablename__ = 'email_config'
     
-    id = Column(Integer, ForeignKey('notification_services.id', ondelete='CASCADE'), primary_key=True)
-    smtp_server = Column(String(255), nullable=False)
-    smtp_port = Column(Integer, nullable=False)
-    username = Column(String(255), nullable=False)
-    password = Column(String(255), nullable=False)
-    from_email = Column(String(255), nullable=False)
-    to_email = Column(String(255), nullable=False)
+    id = Column(Integer, primary_key=True)
+    service_id = Column(Integer, ForeignKey('notification_services.id'), nullable=False)
+    smtp_host = Column(String(255), nullable=False)
+    smtp_port = Column(Integer, nullable=False, default=587)
+    smtp_username = Column(String(255), nullable=False)
+    smtp_password = Column(String(255), nullable=False)
     use_tls = Column(Boolean, default=True)
+    created_at = Column(String, nullable=False, default=func.current_timestamp())
+    updated_at = Column(String, nullable=False, default=func.current_timestamp())
     
-    __mapper_args__ = {
-        'polymorphic_identity': 'email'
-    }
+    # Relationship
+    service = relationship("NotificationService", backref="email_config")
+    recipients = relationship("EmailRecipient", backref="config", cascade="all, delete-orphan")
     
-    def __init__(self):
-        """Initialize email service."""
-        super().__init__()
-        self.service_type = 'email'
-    
-    def _send_test_notification(self):
-        """Send a test email notification."""
-        if not self.enabled or not all([self.smtp_server, self.smtp_port, self.username, self.from_email, self.to_email]):
-            return False
-        
-        msg = MIMEMultipart()
-        msg['From'] = self.from_email
-        msg['To'] = self.to_email
-        msg['Subject'] = 'Power Snitch Test Notification'
-        
-        body = 'This is a test notification from Power Snitch.'
-        msg.attach(MIMEText(body, 'plain'))
-        
-        try:
-            with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
-                if self.use_tls:
-                    server.starttls()
-                server.login(self.username, self.password)
-                server.send_message(msg)
-            return True
-        except Exception:
-            return False
-    
-    def send_notification(self, subject, body):
-        """Send an email notification."""
-        if not self.enabled or not all([self.smtp_server, self.smtp_port, self.username, self.from_email, self.to_email]):
-            return False
-        
-        msg = MIMEMultipart()
-        msg['From'] = self.from_email
-        msg['To'] = self.to_email
-        msg['Subject'] = subject
-        
-        msg.attach(MIMEText(body, 'plain'))
-        
-        try:
-            with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
-                if self.use_tls:
-                    server.starttls()
-                server.login(self.username, self.password)
-                server.send_message(msg)
-            return True
-        except Exception:
-            return False
+    @classmethod
+    def get_config(cls):
+        """Get email configuration."""
+        from web.extensions import db
+        with db.session_scope() as session:
+            service = session.query(NotificationService).filter_by(service_type='email').first()
+            if not service:
+                service = NotificationService(service_type='email')
+                session.add(service)
+                session.flush()
+            
+            config = session.query(cls).filter_by(service_id=service.id).first()
+            if not config:
+                config = cls(service_id=service.id)
+                session.add(config)
+            
+            return config
 
-class SMSService(NotificationService):
-    """SMS notification service."""
+class EmailRecipient(Base):
+    """Email recipient model."""
+    
+    __tablename__ = 'email_recipients'
+    
+    id = Column(Integer, primary_key=True)
+    email_config_id = Column(Integer, ForeignKey('email_config.id'), nullable=False)
+    email_address = Column(String(255), nullable=False)
+    created_at = Column(String, nullable=False, default=func.current_timestamp())
+
+class SMSConfig(Base):
+    """SMS configuration."""
     
     __tablename__ = 'sms_config'
     
-    id = Column(Integer, ForeignKey('notification_services.id', ondelete='CASCADE'), primary_key=True)
-    provider = Column(String(50), CheckConstraint("provider IN ('twilio')"), nullable=False)
-    account_sid = Column(String(255), nullable=False)
-    auth_token = Column(String(255), nullable=False)
-    from_number = Column(String(20), nullable=False)
-    to_number = Column(String(20), nullable=False)
+    id = Column(Integer, primary_key=True)
+    service_id = Column(Integer, ForeignKey('notification_services.id'), nullable=False)
+    twilio_account_sid = Column(String(255), nullable=False)
+    twilio_auth_token = Column(String(255), nullable=False)
+    twilio_from_number = Column(String(20), nullable=False)
+    created_at = Column(String, nullable=False, default=func.current_timestamp())
+    updated_at = Column(String, nullable=False, default=func.current_timestamp())
     
-    __mapper_args__ = {
-        'polymorphic_identity': 'sms'
-    }
+    # Relationship
+    service = relationship("NotificationService", backref="sms_config")
+    recipients = relationship("SMSRecipient", backref="config", cascade="all, delete-orphan")
     
-    def __init__(self):
-        """Initialize SMS service."""
-        super().__init__()
-        self.service_type = 'sms'
-    
-    def _send_test_notification(self):
-        """Send a test SMS notification."""
-        if not self.enabled or not all([self.provider, self.account_sid, self.auth_token, self.from_number, self.to_number]):
-            return False
-        
-        try:
-            if self.provider == 'twilio':
-                from twilio.rest import Client
-                client = Client(self.account_sid, self.auth_token)
-                message = client.messages.create(
-                    body='Test notification from Power Snitch',
-                    from_=self.from_number,
-                    to=self.to_number
-                )
-                return bool(message.sid)
-            return False
-        except Exception:
-            return False
-    
-    def send_notification(self, message):
-        """Send an SMS notification."""
-        if not self.enabled or not all([self.provider, self.account_sid, self.auth_token, self.from_number, self.to_number]):
-            return False
-        
-        try:
-            if self.provider == 'twilio':
-                from twilio.rest import Client
-                client = Client(self.account_sid, self.auth_token)
-                message = client.messages.create(
-                    body=message,
-                    from_=self.from_number,
-                    to=self.to_number
-                )
-                return bool(message.sid)
-            return False
-        except Exception:
-            return False
+    @classmethod
+    def get_config(cls):
+        """Get SMS configuration."""
+        from web.extensions import db
+        with db.session_scope() as session:
+            service = session.query(NotificationService).filter_by(service_type='sms').first()
+            if not service:
+                service = NotificationService(service_type='sms')
+                session.add(service)
+                session.flush()
+            
+            config = session.query(cls).filter_by(service_id=service.id).first()
+            if not config:
+                config = cls(service_id=service.id)
+                session.add(config)
+            
+            return config
 
-def get_webhook_config():
-    """Get webhook configuration."""
-    from web.extensions import db
-    config = db.get_first_model(WebhookService)
-    if not config:
-        config = WebhookService()
-        db.save_model(config)
-    return config
-
-def get_email_config():
-    """Get email configuration."""
-    from web.extensions import db
-    config = db.get_first_model(EmailService)
-    if not config:
-        config = EmailService()
-        db.save_model(config)
-    return config
-
-def get_sms_config():
-    """Get SMS configuration."""
-    from web.extensions import db
-    config = db.get_first_model(SMSService)
-    if not config:
-        config = SMSService()
-        db.save_model(config)
-    return config 
+class SMSRecipient(Base):
+    """SMS recipient model."""
+    
+    __tablename__ = 'sms_recipients'
+    
+    id = Column(Integer, primary_key=True)
+    sms_config_id = Column(Integer, ForeignKey('sms_config.id'), nullable=False)
+    phone_number = Column(String(20), nullable=False)
+    created_at = Column(String, nullable=False, default=func.current_timestamp()) 

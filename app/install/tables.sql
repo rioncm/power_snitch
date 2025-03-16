@@ -11,32 +11,6 @@ CREATE TABLE IF NOT EXISTS web_interface (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- User Authentication
-CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY,
-    username TEXT NOT NULL UNIQUE,
-    password_hash TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- UPS Configuration
-CREATE TABLE IF NOT EXISTS ups_config (
-    id INTEGER PRIMARY KEY,
-    name TEXT NOT NULL,
-    description TEXT,
-    poll_interval INTEGER NOT NULL DEFAULT 5,
-    -- NUT-specific fields
-    nut_device_name TEXT NOT NULL DEFAULT 'ups',
-    nut_driver TEXT NOT NULL DEFAULT 'usbhid-ups',
-    nut_port TEXT,
-    nut_username TEXT NOT NULL DEFAULT 'admin',
-    nut_password TEXT NOT NULL DEFAULT '',
-    nut_retry_count INTEGER DEFAULT 3,
-    nut_retry_delay INTEGER DEFAULT 5,
-    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
 
 -- Health Check Configuration
 CREATE TABLE IF NOT EXISTS health_check (
@@ -62,23 +36,6 @@ CREATE TABLE IF NOT EXISTS battery_health_config (
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- Battery Health History
-CREATE TABLE IF NOT EXISTS battery_health_history (
-    id INTEGER PRIMARY KEY,
-    timestamp TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    charge_percentage INTEGER NOT NULL,
-    runtime_seconds INTEGER,
-    voltage REAL,
-    current REAL,
-    temperature REAL,
-    energy_stored REAL,
-    energy_full REAL,
-    battery_date TEXT,
-    battery_type TEXT,
-    battery_packs INTEGER,
-    battery_packs_bad INTEGER,
-    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
 
 -- Battery Alerts
 CREATE TABLE IF NOT EXISTS battery_alerts (
@@ -187,4 +144,39 @@ CREATE TABLE IF NOT EXISTS always_notify_events (
     event_type TEXT NOT NULL CHECK(event_type IN ('power_failure', 'power_restored', 'low_battery', 'health_check')),
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (trigger_id) REFERENCES triggers(id)
+);
+
+-- UPS table for static configuration and basic info
+CREATE TABLE ups (
+    id INTEGER PRIMARY KEY,
+    description TEXT,
+    -- Basic UPS Info (from NUT)
+    manufacturer TEXT,            -- device.mfr
+    model TEXT,                   -- device.model
+    battery_type TEXT,           -- battery.type
+    -- Configuration
+    driver TEXT DEFAULT "usbhid-ups",  -- advanced settings may be changed later
+    polling_interval INTEGER DEFAULT 10, -- interval in seconds
+    all_info TEXT,            -- all info from NUT
+    low_battery_threshold INTEGER DEFAULT 30,
+    critical_battery_threshold INTEGER DEFAULT 10,
+    battery_runtime_threshold INTEGER DEFAULT 300,
+    -- Timestamps
+    last_poll DATETIME,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Battery history table for time-series data
+CREATE TABLE battery_history (
+    id INTEGER PRIMARY KEY,
+    ups_id INTEGER REFERENCES ups(id),
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    -- Status Fields (updated by NUT polling)
+    status TEXT,                  -- ups.status (OL, OB, LB etc)
+    battery_charge REAL,          -- battery.charge (%)
+    estimated_runtime INTEGER,    -- battery.runtime (seconds)
+    load REAL,                    -- ups.load (%)
+    input_voltage REAL,           -- input.voltage (V)
+    output_voltage REAL          -- output.voltage (V)
 );

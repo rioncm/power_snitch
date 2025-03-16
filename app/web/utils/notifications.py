@@ -7,11 +7,7 @@ Handles sending notifications through various channels.
 import logging
 from datetime import datetime
 from web.models.alert import Alert
-from web.models.notification import (
-    get_webhook_config,
-    get_email_config,
-    get_sms_config
-)
+from web.models.notification import WebhookService, EmailService, SMSService
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -44,7 +40,7 @@ def send_notification(level, message, source='system'):
         notification_results = {'alert_id': alert.id, 'channels': {}}
         
         # Send through webhook
-        webhook_config = get_webhook_config()
+        webhook_config = WebhookService.get_config()
         if webhook_config and webhook_config.enabled:
             try:
                 success = webhook_config.send_notification(data)
@@ -56,7 +52,7 @@ def send_notification(level, message, source='system'):
                 notification_results['channels']['webhook'] = False
         
         # Send through email
-        email_config = get_email_config()
+        email_config = EmailService.get_config()
         if email_config and email_config.enabled:
             try:
                 subject = f'Power Snitch Alert: {level.upper()}'
@@ -75,7 +71,7 @@ Timestamp: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')}
                 notification_results['channels']['email'] = False
         
         # Send through SMS
-        sms_config = get_sms_config()
+        sms_config = SMSService.get_config()
         if sms_config and sms_config.enabled:
             try:
                 sms_message = f'Power Snitch Alert ({level.upper()}): {message}'
@@ -115,19 +111,19 @@ def test_notifications():
     
     try:
         # Test webhook
-        webhook_config = get_webhook_config()
+        webhook_config = WebhookService.get_config()
         if webhook_config and webhook_config.enabled:
             results['webhook'] = webhook_config.test()
             logger.info(f"Webhook test {'successful' if results['webhook'] else 'failed'}")
         
         # Test email
-        email_config = get_email_config()
+        email_config = EmailService.get_config()
         if email_config and email_config.enabled:
             results['email'] = email_config.test()
             logger.info(f"Email test {'successful' if results['email'] else 'failed'}")
         
         # Test SMS
-        sms_config = get_sms_config()
+        sms_config = SMSService.get_config()
         if sms_config and sms_config.enabled:
             results['sms'] = sms_config.test()
             logger.info(f"SMS test {'successful' if results['sms'] else 'failed'}")

@@ -79,4 +79,14 @@ class SystemSettings(Base):
             'retention_period': self.retention_period,
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat()
-        } 
+        }
+    
+    @classmethod
+    def update_web_interface_settings(cls, password_hash=None):
+        """Update web interface settings."""
+        from web.models.web_interface import WebInterface
+        web_interface = WebInterface.get_config()
+        if password_hash:
+            web_interface.password_hash = password_hash
+        web_interface.save()
+        return web_interface 

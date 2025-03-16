@@ -9,19 +9,16 @@ from flask_login import login_required
 from web.models.ups import UPS
 from web.models.alert import Alert
 from web.models.system import SystemSettings
-from web.utils.auth import api_key_required
 
 api_bp = Blueprint('api', __name__)
 
 @api_bp.route('/status')
-@api_key_required
 def get_status():
     """Get current UPS status."""
     ups = UPS.get_current_status()
     return jsonify(ups.to_dict())
 
 @api_bp.route('/alerts')
-@api_key_required
 def get_alerts():
     """Get recent alerts."""
     limit = request.args.get('limit', default=10, type=int)
@@ -29,7 +26,6 @@ def get_alerts():
     return jsonify([alert.to_dict() for alert in alerts])
 
 @api_bp.route('/battery-history')
-@api_key_required
 def get_battery_history():
     """Get battery history."""
     limit = request.args.get('limit', default=24, type=int)
@@ -38,7 +34,6 @@ def get_battery_history():
     return jsonify([entry.to_dict() for entry in history])
 
 @api_bp.route('/system/info')
-@api_key_required
 def get_system_info():
     """Get system information."""
     settings = SystemSettings.get_settings()

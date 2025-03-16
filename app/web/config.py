@@ -8,6 +8,9 @@ import os
 import logging
 from pathlib import Path
 
+# Development key - this will be replaced by install process later
+DEV_SECRET_KEY = 'dev-power-snitch-key-2024'
+
 class Config:
     """Base configuration class."""
     
@@ -24,17 +27,14 @@ class Config:
     LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     LOG_LEVEL = logging.DEBUG
     
-    # Flask
-    SECRET_KEY = os.urandom(24)
-    DEBUG = True
-    
-    # Session
-    SESSION_COOKIE_SECURE = True
-    SESSION_COOKIE_HTTPONLY = True
-    
-    # Security
+    # Flask and Security
+    SECRET_KEY = DEV_SECRET_KEY
+    WTF_CSRF_SECRET_KEY = DEV_SECRET_KEY
     WTF_CSRF_ENABLED = True
-    WTF_CSRF_SECRET_KEY = os.urandom(24)
+    
+    # Session - HTTP only cookie flag for basic security
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SECURE = False  # HTTP-only application
     
     @classmethod
     def init_app(cls, app):
@@ -75,8 +75,9 @@ class ProductionConfig(Config):
     """Production configuration."""
     DEBUG = False
     TESTING = False
-    SESSION_COOKIE_SECURE = True
-    WTF_CSRF_ENABLED = True
+    # In production, these should be set from environment variables or generated during install
+    SECRET_KEY = os.environ.get('FLASK_SECRET_KEY', DEV_SECRET_KEY)
+    WTF_CSRF_SECRET_KEY = os.environ.get('FLASK_CSRF_SECRET_KEY', DEV_SECRET_KEY)
 
 # Configuration dictionary
 config = {

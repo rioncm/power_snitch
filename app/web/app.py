@@ -16,7 +16,9 @@ logger = logging.getLogger(__name__)
 
 def create_app(config_name='default'):
     """Create and configure the Flask application."""
-    app = Flask(__name__)
+    app = Flask(__name__,
+                template_folder='templates',  # Templates will be in web/templates
+                static_folder='static')       # Static files will be in web/static
     
     # Load configuration
     app.config.from_object(config[config_name])
@@ -54,17 +56,21 @@ def start_web_interface():
         
         # Get web interface config within app context
         with app.app_context():
-            web_interface = WebInterface.get_config()
-            if not web_interface:
-                logger.error("Web interface configuration not found")
-                raise RuntimeError("Web interface configuration not found")
+            from web.models.web_interface import WebInterface
+            from web.extensions import db
             
-            port = web_interface.port  # Get port while in session
+            with db.session_scope() as session:
+                web_interface = WebInterface.get_config(session=session)
+                port = web_interface.port  # Get port while in session
+                
+                if not web_interface.setup_completed:
+                    logger.warning("Web interface not configured. Using default port 80.")
+                    port = 80
         
         app.run(
             host='0.0.0.0',  # Always bind to all interfaces
             port=port,
-            debug=False  # Production setting as per development rules
+            debug=True  # Production setting as per development rules
         )
     except Exception as e:
         logger.error(f"Failed to start web interface: {str(e)}")

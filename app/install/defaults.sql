@@ -1,21 +1,3 @@
--- Insert default UPS configuration
-INSERT OR IGNORE INTO ups_config (
-    name, description, poll_interval,
-    nut_device_name, nut_driver, nut_port,
-    nut_username, nut_password, nut_retry_count, nut_retry_delay
-) VALUES (
-    'ups',
-    'Power Snitch UPS',
-    60,
-    'ups',
-    'usbhid-ups',
-    'auto',
-    'admin',
-    '',
-    3,
-    5
-);
-
 -- Insert default web interface settings with default password 'admin'
 INSERT OR IGNORE INTO web_interface (port, password_hash, setup_completed) 
 VALUES (80, 'scrypt:32768:8:1$pHDt0joiS25zK4F6$fc40e48f064dcbd7031adf2676c01273ff17572ff24fe02ee8f10220fd37627d246c4c78669f9871719af96c0c9fd9de09525fa9213b749d1ae8f457149cd2ef', 0);
@@ -66,4 +48,4 @@ CROSS JOIN (
     SELECT 'low_battery' UNION ALL
     SELECT 'health_check'
 ) AS e
-WHERE t.trigger_type = 'always_notify'; 
+WHERE t.trigger_type = 'always_notify';

@@ -11,166 +11,145 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 from web.db import Base
+import logging
+
+logger = logging.getLogger(__name__)
 
 class UPS(Base):
     """UPS model for status monitoring and configuration."""
     
     __tablename__ = 'ups'
     
+    # Basic Information
     id = Column(Integer, primary_key=True)
-    name = Column(String(80), nullable=False)
-    model = Column(String(80))
-    serial_number = Column(String(80))
-    firmware_version = Column(String(80))
-    last_update = Column(DateTime, default=datetime.utcnow)
+    description = Column(String(255), nullable=True)
+    manufacturer = Column(String(255))  # device.mfr
+    model = Column(String(255))         # device.model
+    battery_type = Column(String(255))  # battery.type
     
-    # Current status
-    status = Column(String(20))  # online, onbattery, charging, etc.
-    battery_charge = Column(Integer)  # percentage
-    battery_runtime = Column(Integer)  # seconds
-    input_voltage = Column(Float)
-    output_voltage = Column(Float)
-    load = Column(Integer)  # percentage
+    # Configuration
+    driver = Column(String(80), nullable=False, default='usbhid-ups')
+    polling_interval = Column(Integer, default=10)  # seconds
+    all_info = Column(String()) #JSON string of all info
+    low_battery_threshold = Column(Integer, default=30)
+    critical_battery_threshold = Column(Integer, default=10)
+    battery_runtime_threshold = Column(Integer, default=300)
     
-    # Settings
-    low_battery_threshold = Column(Integer, default=20)  # percentage
-    critical_battery_threshold = Column(Integer, default=10)  # percentage
-    battery_runtime_threshold = Column(Integer, default=300)  # seconds
+    # Timestamps
+    last_poll = Column(DateTime(timezone=True))
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
     # Relationships
     battery_history = relationship("BatteryHistory", back_populates="ups", cascade="all, delete-orphan")
     
-    def __init__(self, name, model=None, serial_number=None):
+    def __init__(self, manufacturer=None, model=None, description=None):
         """Initialize a new UPS."""
-        self.name = name
-        self.model = model
-        self.serial_number = serial_number
-    
-    def update_status(self, status_data):
-        """Update UPS status with new data."""
-        self.status = status_data.get('status')
-        self.battery_charge = status_data.get('battery_charge')
-        self.battery_runtime = status_data.get('battery_runtime')
-        self.input_voltage = status_data.get('input_voltage')
-        self.output_voltage = status_data.get('output_voltage')
-        self.load = status_data.get('load')
-        self.last_update = datetime.utcnow()
-        
-        # Create battery history entry
-        if self.id and self.battery_charge is not None:
-            history = BatteryHistory(
-                ups_id=self.id,
-                battery_charge=self.battery_charge,
-                battery_runtime=self.battery_runtime,
-                status=self.status
-            )
-            history.save()
-    
-    def get_battery_history(self, limit=24):
-        """Get battery history entries."""
-        from web.extensions import db
-        session = db.get_session()
-        try:
-            return session.query(BatteryHistory)\
-                .filter_by(ups_id=self.id)\
-                .order_by(BatteryHistory.timestamp.desc())\
-                .limit(limit)\
-                .all()
-        finally:
-            session.close()
-    
-    def save(self):
-        """Save UPS to database."""
-        from web.extensions import db
-        session = db.get_session()
-        try:
-            session.add(self)
-            session.commit()
-        finally:
-            session.close()
+        self.manufacturer = manufacturer or "Unknown Manufacturer"
+        self.model = model or "Unknown Model"
+        self.description = description or "Auto-detected UPS"
     
     @classmethod
-    def get_current_status(cls):
-        """Get the current UPS status."""
-        from web.extensions import db
-        session = db.get_session()
-        try:
-            return session.query(cls).first()
-        finally:
-            session.close()
-    
-    @classmethod
-    def get_settings(cls):
-        """Get UPS settings."""
-        ups = cls.get_current_status()
+    def get_config(cls, session):
+        """Get UPS configuration or create a default one if it doesn't exist."""
+        ups = session.query(cls).first()
         if not ups:
-            ups = cls(name='Default UPS')
-            ups.save()
+            ups = cls()
+            session.add(ups)
+            session.flush()  # Generate ID without committing
         return ups
+    
+    def record_status(self, status_data):
+        """Record current UPS status in battery history."""
+        try:
+            history = BatteryHistory(
+                status=status_data.get('ups.status'),
+                battery_charge=float(status_data.get('battery.charge', 0)),
+                estimated_runtime=int(status_data.get('battery.runtime', 0)),
+                load=float(status_data.get('ups.load', 0)),
+                input_voltage=float(status_data.get('input.voltage', 0)),
+                output_voltage=float(status_data.get('output.voltage', 0))
+            )
+            self.battery_history.append(history)
+            self.last_poll = func.now()
+            
+            logger.info(f"Recorded UPS status: {status_data.get('ups.status', 'Unknown')}")
+            return True
+        except Exception as e:
+            logger.error(f"Failed to record UPS status: {str(e)}")
+            return False
+    
+    def update_info(self, nut_data):
+        """Update static UPS information from NUT data."""
+        try:
+            if 'device.mfr' in nut_data:
+                self.manufacturer = nut_data['device.mfr']
+            if 'device.model' in nut_data:
+                self.model = nut_data['device.model']
+            if 'battery.type' in nut_data:
+                self.battery_type = nut_data['battery.type']
+            if 'ups.serial' in nut_data:
+                self.serial_number = nut_data['ups.serial']
+            if 'ups.firmware' in nut_data:
+                self.firmware = nut_data['ups.firmware']
+            if 'driver.name' in nut_data:
+                self.driver = nut_data['driver.name']
+            
+            logger.info(f"Updated UPS info for {self.model}")
+            return True
+        except Exception as e:
+            logger.error(f"Failed to update UPS info: {str(e)}")
+            return False
     
     def to_dict(self):
         """Convert UPS to dictionary."""
         return {
             'id': self.id,
-            'name': self.name,
+            'description': self.description,
+            'manufacturer': self.manufacturer,
             'model': self.model,
+            'battery_type': self.battery_type,
             'serial_number': self.serial_number,
-            'firmware_version': self.firmware_version,
-            'last_update': self.last_update.isoformat(),
-            'status': self.status,
-            'battery_charge': self.battery_charge,
-            'battery_runtime': self.battery_runtime,
-            'input_voltage': self.input_voltage,
-            'output_voltage': self.output_voltage,
-            'load': self.load,
-            'settings': {
-                'low_battery_threshold': self.low_battery_threshold,
-                'critical_battery_threshold': self.critical_battery_threshold,
-                'battery_runtime_threshold': self.battery_runtime_threshold
-            }
+            'firmware': self.firmware,
+            'driver': self.driver,
+            'polling_interval': self.polling_interval,
+            'low_battery_threshold': self.low_battery_threshold,
+            'critical_battery_threshold': self.critical_battery_threshold,
+            'battery_runtime_threshold': self.battery_runtime_threshold,
+            'last_poll': self.last_poll.isoformat() if self.last_poll else None,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None
         }
 
 class BatteryHistory(Base):
-    """Model for storing battery history."""
+    """Model for tracking UPS battery status over time."""
     
     __tablename__ = 'battery_history'
     
     id = Column(Integer, primary_key=True)
-    ups_id = Column(Integer, ForeignKey('ups.id', ondelete='CASCADE'), nullable=False)
-    timestamp = Column(DateTime, default=datetime.utcnow)
-    battery_charge = Column(Integer)
-    battery_runtime = Column(Integer)
-    status = Column(String(20))
+    timestamp = Column(DateTime(timezone=True), server_default=func.now())
+    status = Column(String(50))           # ups.status
+    battery_charge = Column(Float)        # battery.charge (%)
+    estimated_runtime = Column(Integer)   # battery.runtime (seconds)
+    load = Column(Float)                  # ups.load (%)
+    input_voltage = Column(Float)         # input.voltage (V)
+    output_voltage = Column(Float)        # output.voltage (V)
     
-    # Relationship
+    # Relationships
+    ups_id = Column(Integer, ForeignKey('ups.id'))
     ups = relationship("UPS", back_populates="battery_history")
-    
-    def __init__(self, ups_id, battery_charge, battery_runtime, status):
-        """Initialize a new battery history entry."""
-        self.ups_id = ups_id
-        self.battery_charge = battery_charge
-        self.battery_runtime = battery_runtime
-        self.status = status
-    
-    def save(self):
-        """Save battery history entry to database."""
-        from web.extensions import db
-        session = db.get_session()
-        try:
-            session.add(self)
-            session.commit()
-        finally:
-            session.close()
     
     def to_dict(self):
         """Convert battery history entry to dictionary."""
         return {
             'id': self.id,
-            'ups_id': self.ups_id,
             'timestamp': self.timestamp.isoformat(),
+            'status': self.status,
             'battery_charge': self.battery_charge,
-            'battery_runtime': self.battery_runtime,
-            'status': self.status
+            'estimated_runtime': self.estimated_runtime,
+            'load': self.load,
+            'input_voltage': self.input_voltage,
+            'output_voltage': self.output_voltage
         }
 
 class UPSConfig(Base):

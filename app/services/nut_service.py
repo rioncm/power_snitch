@@ -24,6 +24,25 @@ logger = logging.getLogger(__name__)
 class NUTService:
     """Service class for managing NUT configuration and operations."""
     
+    # NUT variable mappings to our database fields
+    UPS_INFO_VARS = {
+        'manufacturer': 'device.mfr',
+        'model': 'device.model',
+        'battery_type': 'battery.type',
+        'serial_number': 'ups.serial',
+        'firmware': 'ups.firmware',
+        'driver': 'driver.name'
+    }
+    
+    UPS_STATUS_VARS = {
+        'status': 'ups.status',
+        'battery_charge': 'battery.charge',
+        'estimated_runtime': 'battery.runtime',
+        'load': 'ups.load',
+        'input_voltage': 'input.voltage',
+        'output_voltage': 'output.voltage'
+    }
+    
     def __init__(self):
         """Initialize NUT service with default configuration paths."""
         self.nut_conf_dir = '/etc/nut'
@@ -32,6 +51,94 @@ class NUTService:
         self.upsd_users = os.path.join(self.nut_conf_dir, 'upsd.users')
         self.connection = None
         logger.debug("NUTService initialized with configuration paths")
+    
+    def get_ups_info(self) -> Optional[Dict]:
+        """
+        Get static UPS information.
+        
+        Returns:
+            Optional[Dict]: Dictionary containing UPS information or None if error
+        """
+        logger.debug("Getting UPS information")
+        try:
+            result = subprocess.run(
+                ['upsc', 'ups@localhost'],
+                capture_output=True,
+                text=True,
+                check=True
+            )
+            
+            info = {}
+            for line in result.stdout.splitlines():
+                if ':' in line:
+                    key, value = line.split(':', 1)
+                    key = key.strip()
+                    value = value.strip()
+                    
+                    # Map NUT variables to our database fields
+                    for db_field, nut_var in self.UPS_INFO_VARS.items():
+                        if key == nut_var:
+                            info[db_field] = value
+            
+            logger.debug(f"UPS information retrieved: {info}")
+            return info
+            
+        except subprocess.CalledProcessError as e:
+            logger.error(f"Error getting UPS information: {str(e)}")
+            return None
+        except Exception as e:
+            logger.error(f"Unexpected error getting UPS information: {str(e)}")
+            return None
+    
+    def get_ups_status(self) -> Optional[Dict]:
+        """
+        Get current UPS status.
+        
+        Returns:
+            Optional[Dict]: Dictionary containing UPS status or None if error
+        """
+        logger.debug("Getting UPS status")
+        try:
+            result = subprocess.run(
+                ['upsc', 'ups@localhost'],
+                capture_output=True,
+                text=True,
+                check=True
+            )
+            
+            status = {}
+            for line in result.stdout.splitlines():
+                if ':' in line:
+                    key, value = line.split(':', 1)
+                    key = key.strip()
+                    value = value.strip()
+                    
+                    # Map NUT variables to our database fields
+                    for db_field, nut_var in self.UPS_STATUS_VARS.items():
+                        if key == nut_var:
+                            # Convert numeric values
+                            if db_field in ['battery_charge', 'load', 'input_voltage', 'output_voltage']:
+                                try:
+                                    status[db_field] = float(value)
+                                except ValueError:
+                                    status[db_field] = 0.0
+                            elif db_field == 'estimated_runtime':
+                                try:
+                                    status[db_field] = int(value)
+                                except ValueError:
+                                    status[db_field] = 0
+                            else:
+                                status[db_field] = value
+            
+            logger.debug(f"UPS status retrieved: {status}")
+            return status
+            
+        except subprocess.CalledProcessError as e:
+            logger.error(f"Error getting UPS status: {str(e)}")
+            return None
+        except Exception as e:
+            logger.error(f"Unexpected error getting UPS status: {str(e)}")
+            return None
     
     def validate_config_files(self) -> Tuple[bool, List[str]]:
         """
@@ -76,19 +183,6 @@ class NUTService:
                     errors.append(error_msg)
         except Exception as e:
             error_msg = f"Error reading upsd.conf: {str(e)}"
-            logger.error(error_msg)
-            errors.append(error_msg)
-        
-        # Validate upsd.users
-        try:
-            with open(self.upsd_users, 'r') as f:
-                content = f.read()
-                if '[admin]' not in content:
-                    error_msg = "No admin user configured in upsd.users"
-                    logger.error(error_msg)
-                    errors.append(error_msg)
-        except Exception as e:
-            error_msg = f"Error reading upsd.users: {str(e)}"
             logger.error(error_msg)
             errors.append(error_msg)
         
@@ -167,38 +261,6 @@ instcmds = ALL
         except subprocess.CalledProcessError as e:
             logger.error(f"Error restarting NUT services: {str(e)}")
             raise
-    
-    def get_ups_status(self) -> Optional[Dict]:
-        """
-        Get current UPS status.
-        
-        Returns:
-            Optional[Dict]: Dictionary containing UPS status or None if error
-        """
-        logger.debug("Getting UPS status")
-        try:
-            result = subprocess.run(
-                ['upsc', 'ups@localhost'],
-                capture_output=True,
-                text=True,
-                check=True
-            )
-            
-            status = {}
-            for line in result.stdout.splitlines():
-                if ':' in line:
-                    key, value = line.split(':', 1)
-                    status[key.strip()] = value.strip()
-            
-            logger.debug(f"UPS status retrieved: {status}")
-            return status
-            
-        except subprocess.CalledProcessError as e:
-            logger.error(f"Error getting UPS status: {str(e)}")
-            return None
-        except Exception as e:
-            logger.error(f"Unexpected error getting UPS status: {str(e)}")
-            return None
     
     def test_connection(self) -> Tuple[bool, str]:
         """

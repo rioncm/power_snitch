@@ -8,7 +8,8 @@ import logging
 from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
 from flask_login import login_user, logout_user, login_required, current_user
 from web.extensions import db
-from web.forms.auth import LoginForm
+from app.web.forms.form_auth import LoginForm
+from web.models.web_interface import WebInterface
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -26,7 +27,7 @@ def login():
     if form.validate_on_submit():
         try:
             # Get web interface settings which contains the password hash
-            web_interface = db.get_web_interface()
+            web_interface = WebInterface.get_config()
             if not web_interface:
                 logger.error("Web interface settings not found")
                 flash('System configuration error', 'error')
@@ -38,11 +39,17 @@ def login():
                     'is_authenticated': True,
                     'is_active': True,
                     'is_anonymous': False,
-                    'get_id': lambda: '1'  # Single user always has ID 1
+                    'get_id': lambda self: '1'  # Single user always has ID 1
                 })()
                 
                 login_user(user)
                 logger.info("User logged in successfully")
+                
+                # Check if setup is complete
+                if not web_interface.setup_completed:
+                    logger.info("Setup not completed, redirecting to setup page")
+                    return redirect(url_for('settings.setup'))
+                
                 next_page = request.args.get('next')
                 return redirect(next_page or url_for('dashboard.index'))
             
