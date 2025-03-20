@@ -13,7 +13,7 @@
                         <img src="{{ url_for('static', filename='img/logo-light@250x250.png') }}" alt="Power Snitch Logo" class="img-fluid mb-4" style="max-width: 150px;">
                     </picture>
                     <h2 class="mb-4">Login</h2>
-                    <form method="POST" action="{{ url_for('auth.login') }}">
+                    <form id="loginForm" method="POST" action="{{ url_for('auth.authorize') }}">
                         {{ form.csrf_token }}
                         <div class="mb-3">
                             {{ form.password.label(class="form-label") }}
@@ -31,4 +31,14 @@
         </div>
     </div>
 </div>
+
 {% endblock %} 
+{% block extra_js %}
+<script>
+    //universal form handler
+    document.addEventListener("DOMContentLoaded", function () {
+        setupFormHandler("loginForm");  
+    });
+</script>
+
+{% endblock %}

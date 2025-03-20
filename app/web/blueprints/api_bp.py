@@ -9,6 +9,7 @@ from flask_login import login_required
 from web.models.ups import UPS
 from web.models.alert import Alert
 from web.models.system import SystemSettings
+from web.models.notification import NotificationService
 
 api_bp = Blueprint('api', __name__)
 
@@ -128,3 +129,50 @@ def test_sms():
             'success': False,
             'message': f'Error testing SMS: {str(e)}'
         }), 500 
+
+
+# @login_required    
+# @api_bp.route('/webhook', methods=['POST'])
+# def update_webhook_settings():
+#     """Update webhook settings."""
+#     form = WebhookSettingsForm()
+#     if form.validate_on_submit():
+#         config = NotificationService.get_webhook_config()
+#         config.update(form.data)
+#         config.save()
+#         return jsonify({'success': True, 'message': 'Webhook settings updated successfully'})
+#     return jsonify({'success': False, 'errors': form.errors}), 400
+
+# @api_bp.route('/email', methods=['POST'])
+# @login_required
+# def update_email_settings():
+#     """Update email settings."""
+#     form = EmailSettingsForm()
+#     if form.validate_on_submit():
+#         config = NotificationService.get_email_config()
+#         config.update(form.data)
+#         config.save()
+#         return jsonify({'success': True, 'message': 'Email settings updated successfully'})
+#     return jsonify({'success': False, 'errors': form.errors}), 400
+
+# @api_bp.route('/sms', methods=['POST'])
+# @login_required
+# def update_sms_settings():
+#     """Update SMS settings."""
+#     form = SMSSettingsForm()
+#     if form.validate_on_submit():
+#         config = NotificationService.get_sms_config()
+#         config.update(form.data)
+#         config.save()
+#         return jsonify({'success': True, 'message': 'SMS settings updated successfully'})
+#     return jsonify({'success': False, 'errors': form.errors}), 400
+
+# @api_bp.route('/system', methods=['POST'])
+# @login_required
+# def update_system_settings():
+#     """Update system settings."""
+#     data = request.get_json()
+#     settings = SystemSettings.get_settings()
+#     settings.update(data)
+#     settings.save()
+#     return jsonify({'success': True, 'message': 'System settings updated successfully'}) 

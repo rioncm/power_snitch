@@ -8,7 +8,7 @@ import unittest
 import tempfile
 from unittest.mock import patch, MagicMock
 from services.nut_service import NUTService
-from app.web.db import Database, UPSConfig
+from web.db import Database, UPSConfig
 
 class TestNUTIntegration(unittest.TestCase):
     """Test cases for NUT service and database integration."""

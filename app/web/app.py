@@ -28,15 +28,17 @@ def create_app(config_name='default'):
     init_extensions(app)
     
     # Register blueprints
-    from blueprints.auth import auth_bp
-    from blueprints.dashboard import dashboard_bp
-    from blueprints.settings import settings_bp
-    from blueprints.api import api_bp
+    from blueprints.auth_bp import auth_bp
+    from blueprints.dashboard_bp import dashboard_bp
+    from blueprints.settings_bp import settings_bp
+    from blueprints.api_bp import api_bp
+    from blueprints.setup_bp import setup_bp
     
-    app.register_blueprint(auth_bp)
+    app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(dashboard_bp)
-    app.register_blueprint(settings_bp)
+    app.register_blueprint(settings_bp, url_prefix='/settings')
     app.register_blueprint(api_bp, url_prefix='/api')
+    app.register_blueprint(setup_bp)
     
     # Register error handlers
     @app.errorhandler(404)

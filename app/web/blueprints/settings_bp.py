@@ -12,8 +12,8 @@ from web.models.system import SystemSettings
 from web.models.web_interface import WebInterface
 from web.models.notification import WebhookConfig, EmailConfig, SMSConfig
 from web.extensions import db
-from app.web.forms.form_settings import (
-    SetupUPSSettingsForm,
+from web.forms.form_settings import (
+    UPSSettingsForm,
     WebhookSettingsForm,
     EmailSettingsForm,
     SMSSettingsForm,
@@ -25,44 +25,20 @@ settings_bp = Blueprint('settings', __name__)
 @settings_bp.route('/')
 @login_required
 def index():
-    """Display the settings page."""
-    ups_settings = UPS.get_settings()
+    """Display the edit settings page."""
+    ups_settings = UPS.get_ups_config()
     webhook_config = NotificationService.get_webhook_config()
     email_config = NotificationService.get_email_config()
     sms_config = NotificationService.get_sms_config()
     system_settings = SystemSettings.get_settings()
     
-    return render_template('settings/index.html',
+    return render_template('settings.html',
                          ups_settings=ups_settings,
                          webhook_config=webhook_config,
                          email_config=email_config,
                          sms_config=sms_config,
                          system_settings=system_settings)
 
-@settings_bp.route('/setup', methods=['GET'])
-def setup():
-    """Initial setup page for Power Snitch."""
-    try:
-        with db.session_scope() as session:
-            web_interface_form = WebInterfaceSettingsForm()
-            ups_form = SetupUPSSettingsForm()
-            
-            # Get web interface config
-            web_interface_config = WebInterface.get_config(session)
-            
-            # Get UPS info if available
-            ups = UPS.get_config(session)
-            
-            return render_template('setup.html',
-                                web_interface_form=web_interface_form,
-                                ups_form=ups_form,
-                                ups=ups,
-                                config={'web_interface': web_interface_config})
-    except Exception as e:
-        flash(f'Error loading setup page: {str(e)}', 'error')
-        return render_template('setup.html',
-                            web_interface_form=WebInterfaceSettingsForm(),
-                            ups_form=SetupUPSSettingsForm())
 
 @settings_bp.route('/web-interface/update', methods=['POST'])
 def update_web_interface_settings():
@@ -130,48 +106,3 @@ def update_ups_settings():
             'error': f'Failed to update UPS settings: {str(e)}'
         }), 500
 
-@settings_bp.route('/webhook', methods=['POST'])
-@login_required
-def update_webhook_settings():
-    """Update webhook settings."""
-    form = WebhookSettingsForm()
-    if form.validate_on_submit():
-        config = NotificationService.get_webhook_config()
-        config.update(form.data)
-        config.save()
-        return jsonify({'success': True, 'message': 'Webhook settings updated successfully'})
-    return jsonify({'success': False, 'errors': form.errors}), 400
-
-@settings_bp.route('/email', methods=['POST'])
-@login_required
-def update_email_settings():
-    """Update email settings."""
-    form = EmailSettingsForm()
-    if form.validate_on_submit():
-        config = NotificationService.get_email_config()
-        config.update(form.data)
-        config.save()
-        return jsonify({'success': True, 'message': 'Email settings updated successfully'})
-    return jsonify({'success': False, 'errors': form.errors}), 400
-
-@settings_bp.route('/sms', methods=['POST'])
-@login_required
-def update_sms_settings():
-    """Update SMS settings."""
-    form = SMSSettingsForm()
-    if form.validate_on_submit():
-        config = NotificationService.get_sms_config()
-        config.update(form.data)
-        config.save()
-        return jsonify({'success': True, 'message': 'SMS settings updated successfully'})
-    return jsonify({'success': False, 'errors': form.errors}), 400
-
-@settings_bp.route('/system', methods=['POST'])
-@login_required
-def update_system_settings():
-    """Update system settings."""
-    data = request.get_json()
-    settings = SystemSettings.get_settings()
-    settings.update(data)
-    settings.save()
-    return jsonify({'success': True, 'message': 'System settings updated successfully'}) 

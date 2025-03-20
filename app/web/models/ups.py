@@ -40,23 +40,24 @@ class UPS(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
+
     # Relationships
     battery_history = relationship("BatteryHistory", back_populates="ups", cascade="all, delete-orphan")
     
-    def __init__(self, manufacturer=None, model=None, description=None):
-        """Initialize a new UPS."""
-        self.manufacturer = manufacturer or "Unknown Manufacturer"
-        self.model = model or "Unknown Model"
-        self.description = description or "Auto-detected UPS"
+    def __init__(self):
+        """Initialize a new UPS instance."""
+        
     
     @classmethod
     def get_config(cls, session):
         """Get UPS configuration or create a default one if it doesn't exist."""
         ups = session.query(cls).first()
         if not ups:
-            ups = cls()
-            session.add(ups)
-            session.flush()  # Generate ID without committing
+            logger.error("UPS configuration not found in the database. Run install again.")
+            raise ValueError("UPS configuration not found in the database.")
+        cls.manufacturer = ups.manufacturer
+        cls.model = ups.model
+        cls.description = ups.description
         return ups
     
     def record_status(self, status_data):
