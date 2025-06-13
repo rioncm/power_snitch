@@ -13,12 +13,16 @@ from web.models.web_interface import WebInterface
 from web.models.notification import WebhookConfig, EmailConfig, SMSConfig
 from web.extensions import db
 from web.forms.form_settings import (
-    UPSSettingsForm,
+    SetupUPS,
+    ChangePassword,
     WebhookSettingsForm,
     EmailSettingsForm,
     SMSSettingsForm,
     WebInterfaceSettingsForm
 )
+# Configure logging
+import logging
+logger = logging.getLogger(__name__)
 
 settings_bp = Blueprint('settings', __name__)
 
@@ -26,7 +30,7 @@ settings_bp = Blueprint('settings', __name__)
 @login_required
 def index():
     """Display the edit settings page."""
-    ups_settings = UPS.get_ups_config()
+    ups_settings = UPS.get_config()
     webhook_config = NotificationService.get_webhook_config()
     email_config = NotificationService.get_email_config()
     sms_config = NotificationService.get_sms_config()
@@ -40,10 +44,11 @@ def index():
                          system_settings=system_settings)
 
 
-@settings_bp.route('/web-interface/update', methods=['POST'])
-def update_web_interface_settings():
+@settings_bp.route('/password', methods=['POST'])
+@login_required
+def change_password():
     """Update web interface settings."""
-    form = WebInterfaceSettingsForm()
+    form = ChangePassword()
     
     if not form.validate_on_submit():
         return jsonify({
@@ -52,38 +57,31 @@ def update_web_interface_settings():
         }), 400
     
     try:
-        with db.session_scope() as session:
-            config = WebInterface.get_config(session)
-            if not config:
-                config = WebInterface()
-                session.add(config)
+        WebInterface.set_password(form.password.data)
+        logger.info("Password Updated")
             
-            config.password = form.password.data
-            config.setup_completed = True
-            
-            session.commit()
-            
-            return jsonify({
-                'success': True,
-                'message': 'Web interface settings updated successfully'
-            })
+        return jsonify({
+            'success': True,
+            'message': 'Web interface settings updated successfully'
+        }),200
     except Exception as e:
         return jsonify({
             'success': False,
-            'error': f'Failed to update settings: {str(e)}'
+            'error': f'Failed to update password: {str(e)}'
         }), 500
 
-@settings_bp.route('/ups/update', methods=['POST'])
-def update_ups_settings():
+@settings_bp.route('/ups/description', methods=['POST'])
+def ups_description():
     """Update UPS settings."""
-    form = UPSSettingsForm()
-    
+    form = SetupUPS()
+    logger.debug("Updating UPS Description")
     if not form.validate_on_submit():
+        logger.error("UPS Description form validation failed")
         return jsonify({
             'success': False,
             'errors': form.errors
         }), 400
-    
+    logger.debug("UPS Description form validated")
     try:
         with db.session_scope() as session:
             ups = UPS.get_config(session)
@@ -92,15 +90,18 @@ def update_ups_settings():
                     'success': False,
                     'error': 'No UPS configuration found'
                 }), 404
-            
+            logger.debug("UPS Configuration found")
+            logger.debug(f"Updating UPS Description to {form.description.data} from {ups.description}")
             ups.description = form.description.data
+            logger.debug(f"UPS Description updated to {ups.description}")
             session.commit()
-            
+            logger.info("UPS description updated")
             return jsonify({
                 'success': True,
                 'message': 'UPS description updated successfully'
             })
     except Exception as e:
+        logger.error(f"UPS Description update failed with {e}")
         return jsonify({
             'success': False,
             'error': f'Failed to update UPS settings: {str(e)}'

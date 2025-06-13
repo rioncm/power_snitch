@@ -11,6 +11,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 from web.db import Base
+from web.extensions import db
 import logging
 
 logger = logging.getLogger(__name__)
@@ -47,7 +48,18 @@ class UPS(Base):
     def __init__(self):
         """Initialize a new UPS instance."""
         
-    
+    @staticmethod
+    def set_description(description):
+        with db.session_scope() as session:
+            config = session.query(UPS).first()
+            if config:
+                config.description = description
+                logger.info("UPS description updated successfully.")
+                session.commit()
+            else:
+                logger.error("Password was not updated, config not found.")
+                raise RuntimeError("WebInterface row not found.")
+            
     @classmethod
     def get_config(cls, session):
         """Get UPS configuration or create a default one if it doesn't exist."""
@@ -55,9 +67,6 @@ class UPS(Base):
         if not ups:
             logger.error("UPS configuration not found in the database. Run install again.")
             raise ValueError("UPS configuration not found in the database.")
-        cls.manufacturer = ups.manufacturer
-        cls.model = ups.model
-        cls.description = ups.description
         return ups
     
     def record_status(self, status_data):

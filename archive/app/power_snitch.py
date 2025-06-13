@@ -18,6 +18,7 @@ from email.mime.multipart import MIMEMultipart
 from twilio.rest import Client
 from web.db import Database
 
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -33,61 +34,61 @@ class PowerSnitch:
     def __init__(self, db_path):
         """Initialize Power Snitch with database connection."""
         self.db = Database(db_path)
-        self.setup_notification_services()
+        #self.setup_notification_services()
         self.last_notification = {}
         self.last_battery_level = None
         self.last_runtime = None
         self.last_status = None
         
-    def setup_notification_services(self):
-        """Set up notification services from database configuration."""
-        # Webhook
-        webhook_service = self.db.get_notification_service('webhook')
-        if webhook_service and webhook_service.enabled:
-            webhook_config = webhook_service.webhook_config
-            self.webhook_url = webhook_config.url
-            self.webhook_method = webhook_config.method
-            self.webhook_timeout = webhook_config.timeout
-            self.webhook_headers = json.loads(webhook_config.headers) if webhook_config.headers else {}
-        else:
-            self.webhook_url = None
-            self.webhook_method = None
-            self.webhook_timeout = None
-            self.webhook_headers = None
+    # def setup_notification_services(self):
+    #     """Set up notification services from database configuration."""
+    #     # Webhook
+    #     webhook_service = self.db.get_notification_service('webhook')
+    #     if webhook_service and webhook_service.enabled:
+    #         webhook_config = webhook_service.webhook_config
+    #         self.webhook_url = webhook_config.url
+    #         self.webhook_method = webhook_config.method
+    #         self.webhook_timeout = webhook_config.timeout
+    #         self.webhook_headers = json.loads(webhook_config.headers) if webhook_config.headers else {}
+    #     else:
+    #         self.webhook_url = None
+    #         self.webhook_method = None
+    #         self.webhook_timeout = None
+    #         self.webhook_headers = None
         
-        # Email
-        email_service = self.db.get_notification_service('email')
-        if email_service and email_service.enabled:
-            email_config = email_service.email_config
-            self.smtp_host = email_config.smtp_host
-            self.smtp_port = email_config.smtp_port
-            self.smtp_username = email_config.smtp_username
-            self.smtp_password = email_config.smtp_password
-            self.smtp_use_tls = email_config.use_tls
-            self.email_recipients = [r.email_address for r in email_config.recipients]
-        else:
-            self.smtp_host = None
-            self.smtp_port = None
-            self.smtp_username = None
-            self.smtp_password = None
-            self.smtp_use_tls = None
-            self.email_recipients = []
+    #     # Email
+    #     email_service = self.db.get_notification_service('email')
+    #     if email_service and email_service.enabled:
+    #         email_config = email_service.email_config
+    #         self.smtp_host = email_config.smtp_host
+    #         self.smtp_port = email_config.smtp_port
+    #         self.smtp_username = email_config.smtp_username
+    #         self.smtp_password = email_config.smtp_password
+    #         self.smtp_use_tls = email_config.use_tls
+    #         self.email_recipients = [r.email_address for r in email_config.recipients]
+    #     else:
+    #         self.smtp_host = None
+    #         self.smtp_port = None
+    #         self.smtp_username = None
+    #         self.smtp_password = None
+    #         self.smtp_use_tls = None
+    #         self.email_recipients = []
         
-        # SMS
-        sms_service = self.db.get_notification_service('sms')
-        if sms_service and sms_service.enabled:
-            sms_config = sms_service.sms_config
-            self.twilio_sid = sms_config.twilio_account_sid
-            self.twilio_token = sms_config.twilio_auth_token
-            self.twilio_from = sms_config.twilio_from_number
-            self.sms_recipients = [r.phone_number for r in sms_config.recipients]
-            self.twilio_client = Client(self.twilio_sid, self.twilio_token)
-        else:
-            self.twilio_sid = None
-            self.twilio_token = None
-            self.twilio_from = None
-            self.sms_recipients = []
-            self.twilio_client = None
+    #     # SMS
+    #     sms_service = self.db.get_notification_service('sms')
+    #     if sms_service and sms_service.enabled:
+    #         sms_config = sms_service.sms_config
+    #         self.twilio_sid = sms_config.twilio_account_sid
+    #         self.twilio_token = sms_config.twilio_auth_token
+    #         self.twilio_from = sms_config.twilio_from_number
+    #         self.sms_recipients = [r.phone_number for r in sms_config.recipients]
+    #         self.twilio_client = Client(self.twilio_sid, self.twilio_token)
+    #     else:
+    #         self.twilio_sid = None
+    #         self.twilio_token = None
+    #         self.twilio_from = None
+    #         self.sms_recipients = []
+    #         self.twilio_client = None
     
     def get_ups_status(self):
         """Get current UPS status using NUT."""
@@ -361,13 +362,13 @@ def main():
         os.makedirs('/var/log/power_snitch', exist_ok=True)
         
         # Initialize database
-        db_path = '/opt/power_snitch/data/power_snitch.db'
-        db = Database(db_path)
-        db.init_db()
+        # db_path = '/opt/power_snitch/data/power_snitch.db'
+        # db = Database(db_path)
+        # db.init_db()
         
         # Create and run Power Snitch
-        snitch = PowerSnitch(db_path)
-        snitch.run()
+        # snitch = PowerSnitch(db_path)
+        # snitch.run()
         
     except Exception as e:
         logger.error(f"Fatal error: {str(e)}")

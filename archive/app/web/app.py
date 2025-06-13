@@ -38,7 +38,7 @@ def create_app(config_name='default'):
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(settings_bp, url_prefix='/settings')
     app.register_blueprint(api_bp, url_prefix='/api')
-    app.register_blueprint(setup_bp)
+    app.register_blueprint(setup_bp, url_prefix='/setup')
     
     # Register error handlers
     @app.errorhandler(404)
@@ -54,21 +54,14 @@ def create_app(config_name='default'):
 def start_web_interface():
     """Start the web interface."""
     try:
-        app = create_app('production')  # Use production config by default
-        
-        # Get web interface config within app context
-        with app.app_context():
-            from web.models.web_interface import WebInterface
-            from web.extensions import db
+        app = create_app('development')  
+        with app.db.session_scope() as session:
+            config = WebInterface.get_config(session) # Get port from WebInterface model      
+            port = config.port if config else None
+            if not config:
+                logger.warning("Web interface configuration not found. Using default port 80.")
+                port = 80
             
-            with db.session_scope() as session:
-                web_interface = WebInterface.get_config(session=session)
-                port = web_interface.port  # Get port while in session
-                
-                if not web_interface.setup_completed:
-                    logger.warning("Web interface not configured. Using default port 80.")
-                    port = 80
-        
         app.run(
             host='0.0.0.0',  # Always bind to all interfaces
             port=port,
