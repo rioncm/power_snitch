@@ -1,0 +1,21 @@
+# Core runtime
+fastapi
+uvicorn
+
+# Async I/O for webhook and SMTP
+aiohttp
+aiosmtplib
+
+# YAML and validation
+pyyaml
+pydantic
+
+# Database
+aiosqlite
+
+# Logging and parsing
+python-json-logger
+
+# Testing
+pytest
+httpx

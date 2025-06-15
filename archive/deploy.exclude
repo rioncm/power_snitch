@@ -1,9 +1,0 @@
-.*
-__pycache__
-*.db
-.git
-desktop-graphics
-devplans
-venv
-deploy.sh
-deploy.exclude

@@ -1,0 +1,44 @@
+# Example config.yaml for Power Snitch
+
+ups:
+  poll_interval_seconds: 10
+  status_command: "/bin/upsc ups@localhost"
+
+channels:
+  webhook_alert:
+    type: "webhook"
+    url: "https://example.com/notify"
+    headers:
+      Authorization: "Bearer YOUR_API_TOKEN"
+
+  admin_email:
+    type: "email"
+    to:
+      - "admin@example.com"
+
+  backup_email:
+    type: "email"
+    to:
+      - "alerts@example.com"
+
+alerts:
+  - event: "on_battery"
+    repeat_interval_seconds: 300
+    methods:
+      - webhook_alert
+      - admin_email
+
+  - event: "low_battery|LB"
+    methods:
+      - backup_email
+
+logging:
+  level: "INFO"
+  path: "/var/log/powersnitch.log"
+  json_format: true
+
+smtp:
+  server: "smtp.example.com"
+  port: 587
+  username: "smtp_user"
+  password: "smtp_pass"
