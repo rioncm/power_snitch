@@ -18,6 +18,104 @@ VENV_DIR="$APP_DIR/.venv"
 DATA_DIR="$APP_DIR/data"
 ENV_FILE="$APP_DIR/runtime.env"
 SERVICE_FILE="/etc/systemd/system/powersnitch.service"
+NUT_BACKUP_DIR="$DATA_DIR/nut-backups"
+
+prompt_yes_default() {
+  local prompt="$1"
+  local reply=""
+  read -r -p "$prompt [Y/n] " reply || true
+  case "${reply,,}" in
+    n|no)
+      return 1
+      ;;
+    *)
+      return 0
+      ;;
+  esac
+}
+
+backup_nut_file() {
+  local path="$1"
+  local name
+  name="$(basename "$path")"
+  if [ -f "$path" ]; then
+    sudo cp "$path" "$NUT_BACKUP_DIR/${name}.$(date +%Y%m%d%H%M%S).bak"
+  fi
+}
+
+nut_is_compatible() {
+  if ! grep -Eq '^MODE=standalone$' /etc/nut/nut.conf 2>/dev/null; then
+    return 1
+  fi
+  if ! grep -Eq '^\[[^]]+\]' /etc/nut/ups.conf 2>/dev/null; then
+    return 1
+  fi
+  if ! command -v upsc >/dev/null 2>&1; then
+    return 1
+  fi
+  local discovered
+  discovered="$(upsc -l 2>/dev/null || true)"
+  [ -n "$discovered" ]
+}
+
+configure_nut_for_powersnitch() {
+  local scanner_output=""
+  local scanner_stanzas=""
+  mkdir -p "$NUT_BACKUP_DIR"
+
+  backup_nut_file /etc/nut/nut.conf
+  backup_nut_file /etc/nut/ups.conf
+
+  echo "Configuring NUT in standalone mode for local USB UPS monitoring..."
+  sudo tee /etc/nut/nut.conf >/dev/null <<'EOF'
+MODE=standalone
+EOF
+
+  if command -v nut-scanner >/dev/null 2>&1; then
+    scanner_output="$(nut-scanner -U 2>/dev/null || true)"
+    scanner_stanzas="$(printf "%s\n" "$scanner_output" | awk '
+      BEGIN { keep = 0 }
+      /^[[:space:]]*#/ { next }
+      /^\[[^]]+\]/ { keep = 1 }
+      keep { print }
+    ')"
+  fi
+
+  if [ -n "$scanner_stanzas" ]; then
+    echo "Using nut-scanner output to build /etc/nut/ups.conf"
+    printf "%s\n" "$scanner_stanzas" | sudo tee /etc/nut/ups.conf >/dev/null
+  else
+    echo "nut-scanner did not return a usable config. Falling back to a generic USB HID UPS definition."
+    sudo tee /etc/nut/ups.conf >/dev/null <<'EOF'
+[ups1]
+    driver = usbhid-ups
+    port = auto
+    desc = "Auto-configured USB UPS"
+EOF
+  fi
+
+  if systemctl list-unit-files | grep -q '^nut-driver\.service'; then
+    sudo systemctl restart nut-driver || true
+  else
+    sudo upsdrvctl start || true
+  fi
+  sudo systemctl restart nut-server || true
+  sleep 2
+}
+
+print_nut_requirements() {
+  cat <<'EOF'
+Power Snitch requires local NUT to provide UPS status via:
+  upsc -l
+  upsc <ups-name>
+
+Minimum compatible settings:
+  /etc/nut/nut.conf  -> MODE=standalone
+  /etc/nut/ups.conf  -> at least one UPS definition
+  nut-driver         -> running or able to start drivers
+  nut-server         -> running successfully
+EOF
+}
 
 echo "Installing Power Snitch dependencies..."
 sudo apt update
@@ -28,6 +126,9 @@ sudo apt install -y \
   python3-pip \
   sqlite3 \
   curl
+if apt-cache show nut-scanner >/dev/null 2>&1; then
+  sudo apt install -y nut-scanner
+fi
 
 echo "Preparing application directories..."
 sudo mkdir -p "$APP_DIR" "$DATA_DIR"
@@ -67,11 +168,31 @@ cat > "$ENV_FILE" <<EOF
 POWERSNITCH_DATA_DIR=$DATA_DIR
 POWERSNITCH_SQLITE_PATH=$DATA_DIR/powersnitch.db
 POWERSNITCH_INITIAL_PASSWORD_FILE=$DATA_DIR/initial_admin_password.txt
-POWERSNITCH_BIND_HOST=127.0.0.1
+POWERSNITCH_BIND_HOST=0.0.0.0
 POWERSNITCH_PORT=8000
 POWERSNITCH_SESSION_SECRET=$SESSION_SECRET
 POWERSNITCH_STARTUP_DISCOVERY=true
 EOF
+
+if nut_is_compatible; then
+  echo "Existing NUT configuration looks compatible with Power Snitch."
+else
+  echo "NUT is installed but not yet compatible with Power Snitch."
+  if prompt_yes_default "May the installer configure local NUT for Power Snitch USB UPS autodiscovery?"; then
+    configure_nut_for_powersnitch
+  else
+    print_nut_requirements
+  fi
+fi
+
+NUT_DISCOVERY_OUTPUT="$(upsc -l 2>/dev/null || true)"
+if [ -n "$NUT_DISCOVERY_OUTPUT" ]; then
+  echo "NUT discovery succeeded:"
+  printf '  %s\n' $NUT_DISCOVERY_OUTPUT
+else
+  echo "Warning: NUT did not return any UPS identifiers via 'upsc -l'."
+  echo "Power Snitch will run, but UPS discovery in the UI will not work until NUT is configured correctly."
+fi
 
 sudo cp systemd/powersnitch.service "$SERVICE_FILE"
 sudo sed -i "s|__APP_DIR__|$APP_DIR|g" "$SERVICE_FILE"
@@ -87,4 +208,4 @@ echo
 echo "Next steps:"
 echo "  sudo systemctl start powersnitch"
 echo "  cat $DATA_DIR/initial_admin_password.txt"
-echo "  browse to http://127.0.0.1:8000"
+echo "  browse to http://<server-ip>:8000"

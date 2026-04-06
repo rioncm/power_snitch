@@ -17,7 +17,7 @@ def _bool_env(name: str, default: bool) -> bool:
 class Settings:
     app_name: str = "Power Snitch"
     data_dir: Path = Path(os.getenv("POWERSNITCH_DATA_DIR", "/tmp/powersnitch"))
-    bind_host: str = os.getenv("POWERSNITCH_BIND_HOST", "127.0.0.1")
+    bind_host: str = os.getenv("POWERSNITCH_BIND_HOST", "0.0.0.0")
     port: int = int(os.getenv("POWERSNITCH_PORT", "8000"))
     session_secret: str = os.getenv("POWERSNITCH_SESSION_SECRET", secrets.token_urlsafe(32))
     sqlite_path: Path = Path(os.getenv("POWERSNITCH_SQLITE_PATH", ""))
@@ -53,4 +53,3 @@ def get_settings() -> Settings:
     settings = Settings()
     settings.data_dir.mkdir(parents=True, exist_ok=True)
     return settings
-
