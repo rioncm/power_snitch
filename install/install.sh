@@ -2,6 +2,15 @@
 
 set -euo pipefail
 
+if [ "${EUID}" -ne 0 ]; then
+  echo "Please run this installer with sudo."
+  exit 1
+fi
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SOURCE_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+INSTALL_USER="${SUDO_USER:-$USER}"
+INSTALL_GROUP="$(id -gn "${INSTALL_USER}")"
 APP_DIR="/opt/powersnitch"
 VENV_DIR="$APP_DIR/.venv"
 DATA_DIR="$APP_DIR/data"
@@ -20,7 +29,21 @@ sudo apt install -y \
 
 echo "Preparing application directories..."
 sudo mkdir -p "$APP_DIR" "$DATA_DIR"
-sudo chown -R "$USER":"$USER" "$APP_DIR"
+sudo chown -R "$INSTALL_USER":"$INSTALL_GROUP" "$APP_DIR"
+
+echo "Copying application files into $APP_DIR..."
+tar \
+  --exclude=".git" \
+  --exclude="__pycache__" \
+  --exclude=".pytest_cache" \
+  --exclude=".mypy_cache" \
+  --exclude=".ruff_cache" \
+  --exclude=".venv" \
+  --exclude="*.pyc" \
+  -C "$SOURCE_DIR" \
+  -cf - . | tar -C "$APP_DIR" -xf -
+
+sudo chown -R "$INSTALL_USER":"$INSTALL_GROUP" "$APP_DIR"
 
 if [ ! -d "$VENV_DIR" ]; then
   python3 -m venv "$VENV_DIR"
@@ -48,7 +71,7 @@ EOF
 
 sudo cp systemd/powersnitch.service "$SERVICE_FILE"
 sudo sed -i "s|__APP_DIR__|$APP_DIR|g" "$SERVICE_FILE"
-sudo sed -i "s|__USER__|$USER|g" "$SERVICE_FILE"
+sudo sed -i "s|__USER__|$INSTALL_USER|g" "$SERVICE_FILE"
 sudo systemctl daemon-reload
 sudo systemctl enable powersnitch.service
 
