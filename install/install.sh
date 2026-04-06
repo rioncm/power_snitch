@@ -9,6 +9,8 @@ fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SOURCE_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+cd "$SCRIPT_DIR"
+
 INSTALL_USER="${SUDO_USER:-$USER}"
 INSTALL_GROUP="$(id -gn "${INSTALL_USER}")"
 APP_DIR="/opt/powersnitch"
