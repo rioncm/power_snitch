@@ -15,6 +15,9 @@ pydantic
 
 # Database
 aiosqlite
+sqlalchemy
+alembic
+greenlet
 
 # Logging and parsing
 python-json-logger

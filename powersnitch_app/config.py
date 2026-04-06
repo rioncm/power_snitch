@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 import secrets
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 
@@ -16,23 +16,21 @@ def _bool_env(name: str, default: bool) -> bool:
 @dataclass(slots=True)
 class Settings:
     app_name: str = "Power Snitch"
-    data_dir: Path = Path(os.getenv("POWERSNITCH_DATA_DIR", "/tmp/powersnitch"))
-    bind_host: str = os.getenv("POWERSNITCH_BIND_HOST", "0.0.0.0")
-    port: int = int(os.getenv("POWERSNITCH_PORT", "8000"))
-    session_secret: str = os.getenv("POWERSNITCH_SESSION_SECRET", secrets.token_urlsafe(32))
-    sqlite_path: Path = Path(os.getenv("POWERSNITCH_SQLITE_PATH", ""))
-    initial_password_file: Path = Path(
-        os.getenv("POWERSNITCH_INITIAL_PASSWORD_FILE", "")
-    )
-    initial_password: str | None = os.getenv("POWERSNITCH_INITIAL_PASSWORD")
-    nut_list_command: str = os.getenv("POWERSNITCH_NUT_LIST_COMMAND", "upsc -l")
-    nut_status_command: str = os.getenv("POWERSNITCH_NUT_STATUS_COMMAND", "upsc {identifier}")
-    startup_discovery: bool = _bool_env("POWERSNITCH_STARTUP_DISCOVERY", True)
-    influx_url: str | None = os.getenv("POWERSNITCH_INFLUX_URL")
-    influx_org: str | None = os.getenv("POWERSNITCH_INFLUX_ORG")
-    influx_bucket: str | None = os.getenv("POWERSNITCH_INFLUX_BUCKET")
-    influx_token: str | None = os.getenv("POWERSNITCH_INFLUX_TOKEN")
-    influx_verify_tls: bool = _bool_env("POWERSNITCH_INFLUX_VERIFY_TLS", True)
+    data_dir: Path = field(default_factory=lambda: Path(os.getenv("POWERSNITCH_DATA_DIR", "/tmp/powersnitch")))
+    bind_host: str = field(default_factory=lambda: os.getenv("POWERSNITCH_BIND_HOST", "0.0.0.0"))
+    port: int = field(default_factory=lambda: int(os.getenv("POWERSNITCH_PORT", "8000")))
+    session_secret: str = field(default_factory=lambda: os.getenv("POWERSNITCH_SESSION_SECRET", secrets.token_urlsafe(32)))
+    sqlite_path: Path = field(default_factory=lambda: Path(os.getenv("POWERSNITCH_SQLITE_PATH", "")))
+    initial_password_file: Path = field(default_factory=lambda: Path(os.getenv("POWERSNITCH_INITIAL_PASSWORD_FILE", "")))
+    initial_password: str | None = field(default_factory=lambda: os.getenv("POWERSNITCH_INITIAL_PASSWORD"))
+    nut_list_command: str = field(default_factory=lambda: os.getenv("POWERSNITCH_NUT_LIST_COMMAND", "upsc -l"))
+    nut_status_command: str = field(default_factory=lambda: os.getenv("POWERSNITCH_NUT_STATUS_COMMAND", "upsc {identifier}"))
+    startup_discovery: bool = field(default_factory=lambda: _bool_env("POWERSNITCH_STARTUP_DISCOVERY", True))
+    influx_url: str | None = field(default_factory=lambda: os.getenv("POWERSNITCH_INFLUX_URL"))
+    influx_org: str | None = field(default_factory=lambda: os.getenv("POWERSNITCH_INFLUX_ORG"))
+    influx_bucket: str | None = field(default_factory=lambda: os.getenv("POWERSNITCH_INFLUX_BUCKET"))
+    influx_token: str | None = field(default_factory=lambda: os.getenv("POWERSNITCH_INFLUX_TOKEN"))
+    influx_verify_tls: bool = field(default_factory=lambda: _bool_env("POWERSNITCH_INFLUX_VERIFY_TLS", True))
 
     def __post_init__(self) -> None:
         if not str(self.sqlite_path):

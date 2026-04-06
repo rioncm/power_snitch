@@ -247,6 +247,7 @@ set +a
 
 echo "Bootstrapping Power Snitch database and admin credentials..."
 "$VENV_DIR/bin/python" -m powersnitch_app.bootstrap
+sudo chown -R "$INSTALL_USER":"$INSTALL_GROUP" "$DATA_DIR"
 
 if nut_is_compatible; then
   echo "Existing NUT configuration looks compatible with Power Snitch."

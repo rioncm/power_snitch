@@ -11,12 +11,14 @@ from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 
 from powersnitch_app.config import Settings
+from powersnitch_app.bootstrap import ensure_bootstrap
 from powersnitch_app.core.monitor import MonitorService
+from powersnitch_app.db import Database
 from powersnitch_app.integrations.influx import InfluxTelemetryMirror
 from powersnitch_app.integrations.notifications import NotificationDispatcher
 from powersnitch_app.integrations.nut import NutClient
 from powersnitch_app.security import hash_password, require_admin, verify_password
-from powersnitch_app.storage import Database, Repository
+from powersnitch_app.storage import Repository
 
 
 def service_type_fields(service_type: str) -> list[tuple[str, str]]:
@@ -83,7 +85,7 @@ def build_graph_points(samples: list[dict[str, Any]], field: str) -> str:
 
 
 def create_app(settings: Settings) -> FastAPI:
-    db = Database(settings.sqlite_path)
+    db = Database(settings)
     repository = Repository(db)
     nut_client = NutClient(settings.nut_list_command, settings.nut_status_command)
     monitor = MonitorService(
@@ -95,7 +97,7 @@ def create_app(settings: Settings) -> FastAPI:
 
     @asynccontextmanager
     async def lifespan(_app: FastAPI):
-        await db.initialize(settings.initial_password, settings.initial_password_file)
+        await ensure_bootstrap(settings)
         await monitor.startup(discover=settings.startup_discovery)
         try:
             yield
