@@ -34,140 +34,15 @@ prompt_yes_default() {
   esac
 }
 
-backup_nut_file() {
-  local path="$1"
-  local name
-  name="$(basename "$path")"
-  if [ -f "$path" ]; then
-    sudo cp "$path" "$NUT_BACKUP_DIR/${name}.$(date +%Y%m%d%H%M%S).bak"
-  fi
-}
-
 nut_is_compatible() {
-  if ! grep -Eq '^MODE=standalone$' /etc/nut/nut.conf 2>/dev/null; then
-    return 1
-  fi
-  if ! grep -Eq '^\[[^]]+\]' /etc/nut/ups.conf 2>/dev/null; then
-    return 1
-  fi
-  if ! command -v upsc >/dev/null 2>&1; then
-    return 1
-  fi
-  local discovered
-  discovered="$(upsc -l 2>/dev/null || true)"
-  [ -n "$discovered" ]
+  "$VENV_DIR/bin/python" -m powersnitch_app.nut_setup --check-compatible >/dev/null 2>&1
 }
 
 configure_nut_for_powersnitch() {
-  local scanner_output=""
-  local scanner_stanzas=""
-  local generated_stanzas=""
   mkdir -p "$NUT_BACKUP_DIR"
-
-  backup_nut_file /etc/nut/nut.conf
-  backup_nut_file /etc/nut/ups.conf
-
   echo "Configuring NUT in standalone mode for local USB UPS monitoring..."
-  sudo tee /etc/nut/nut.conf >/dev/null <<'EOF'
-MODE=standalone
-EOF
-
-  generated_stanzas="$(generate_usb_ups_stanzas)"
-
-  if command -v nut-scanner >/dev/null 2>&1; then
-    scanner_output="$(nut-scanner -U 2>/dev/null || true)"
-    scanner_stanzas="$(printf "%s\n" "$scanner_output" | awk '
-      BEGIN { keep = 0 }
-      /^[[:space:]]*#/ { next }
-      /^\[[^]]+\]/ { keep = 1 }
-      keep { print }
-    ')"
-  fi
-
-  if [ -n "$generated_stanzas" ]; then
-    echo "Using USB device metadata to build /etc/nut/ups.conf"
-    printf "%s\n" "$generated_stanzas" | sudo tee /etc/nut/ups.conf >/dev/null
-  elif [ -n "$scanner_stanzas" ]; then
-    echo "Using nut-scanner output to build /etc/nut/ups.conf"
-    printf "%s\n" "$scanner_stanzas" | sudo tee /etc/nut/ups.conf >/dev/null
-  else
-    echo "nut-scanner did not return a usable config. Falling back to a generic USB HID UPS definition."
-    sudo tee /etc/nut/ups.conf >/dev/null <<'EOF'
-[ups1]
-    driver = usbhid-ups
-    port = auto
-    desc = "Auto-configured USB UPS"
-EOF
-  fi
-
-  if systemctl list-unit-files | grep -q '^nut-driver\.service'; then
-    sudo systemctl restart nut-driver || true
-  else
-    sudo upsdrvctl start || true
-  fi
-  sudo systemctl restart nut-server || true
+  "$VENV_DIR/bin/python" -m powersnitch_app.nut_setup --apply --backup-dir "$NUT_BACKUP_DIR"
   sleep 2
-}
-
-generate_usb_ups_stanzas() {
-  if ! command -v udevadm >/dev/null 2>&1; then
-    return 0
-  fi
-
-  local output=""
-  local idx=0
-  local dev=""
-  for dev in /dev/bus/usb/*/*; do
-    [ -e "$dev" ] || continue
-
-    local properties=""
-    properties="$(udevadm info -q property -n "$dev" 2>/dev/null || true)"
-    [ -n "$properties" ] || continue
-
-    local vendor_id=""
-    local model_id=""
-    local vendor=""
-    local model=""
-    local serial=""
-
-    vendor_id="$(printf '%s\n' "$properties" | awk -F= '/^ID_VENDOR_ID=/{print $2; exit}')"
-    model_id="$(printf '%s\n' "$properties" | awk -F= '/^ID_MODEL_ID=/{print $2; exit}')"
-    vendor="$(printf '%s\n' "$properties" | awk -F= '/^ID_VENDOR=/{print $2; exit}')"
-    model="$(printf '%s\n' "$properties" | awk -F= '/^ID_MODEL=/{print $2; exit}')"
-    serial="$(printf '%s\n' "$properties" | awk -F= '/^ID_SERIAL_SHORT=/{print $2; exit}')"
-
-    if [ -z "$serial" ]; then
-      serial="$(printf '%s\n' "$properties" | awk -F= '/^ID_SERIAL=/{print $2; exit}')"
-    fi
-
-    case "${vendor_id}:${model_id}" in
-      0764:0601|051d:*|09ae:*|0665:*)
-        idx=$((idx + 1))
-        if [ -z "$vendor" ]; then
-          vendor="UPS"
-        fi
-        if [ -z "$model" ]; then
-          model="USB UPS"
-        fi
-        if [ -z "$serial" ]; then
-          serial="ups${idx}"
-        fi
-        output+=$(cat <<EOF
-[ups${idx}]
-    driver = usbhid-ups
-    port = auto
-    vendorid = ${vendor_id}
-    productid = ${model_id}
-    serial = ${serial}
-    desc = "${vendor} ${model}"
-
-EOF
-)
-        ;;
-    esac
-  done
-
-  printf "%s" "$output"
 }
 
 print_nut_requirements() {
@@ -248,6 +123,9 @@ set +a
 echo "Bootstrapping Power Snitch database and admin credentials..."
 "$VENV_DIR/bin/python" -m powersnitch_app.bootstrap
 sudo chown -R "$INSTALL_USER":"$INSTALL_GROUP" "$DATA_DIR"
+
+echo "Detected supported USB UPS devices:"
+"$VENV_DIR/bin/python" -m powersnitch_app.nut_setup || true
 
 if nut_is_compatible; then
   echo "Existing NUT configuration looks compatible with Power Snitch."
