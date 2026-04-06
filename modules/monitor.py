@@ -2,6 +2,7 @@ import asyncio
 import subprocess
 import json
 import time
+import re
 from datetime import datetime
 from modules.config import PowerSnitchConfig
 from modules.logger import get_logger

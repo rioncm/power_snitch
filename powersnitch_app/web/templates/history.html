@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="panel p-4">
+  <h1 class="hero-title mb-3">Alert History</h1>
+  <div class="table-responsive">
+    <table class="table">
+      <thead><tr><th>Time</th><th>UPS</th><th>Condition</th><th>State</th><th>Target</th><th>Result</th><th>Error</th></tr></thead>
+      <tbody>
+        {% for alert in alerts %}
+        <tr>
+          <td>{{ alert.occurred_at }}</td>
+          <td>{{ alert.display_name or "-" }}</td>
+          <td>{{ alert.condition_key }}</td>
+          <td>{{ alert.condition_state }}</td>
+          <td>{{ alert.channel_name or alert.target }}</td>
+          <td>{{ "Sent" if alert.success else "Failed" }}</td>
+          <td>{{ alert.error_message or "-" }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="muted">No alert history yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+

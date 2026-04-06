@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="panel p-4">
+      <h1 class="hero-title mb-3">Notification Channels</h1>
+      <table class="table">
+        <thead><tr><th>Name</th><th>Service</th><th>Target</th><th>Extra</th></tr></thead>
+        <tbody>
+          {% for channel in channels %}
+          <tr><td>{{ channel.name }}</td><td>{{ channel.service_name }}</td><td><code>{{ channel.target }}</code></td><td>{{ channel.extra_text }}</td></tr>
+          {% else %}
+          <tr><td colspan="4" class="muted">No channels configured.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="panel p-4">
+      <h2 class="h5">Add channel</h2>
+      {% if services %}
+      <form method="get" action="/channels" class="mb-3">
+        <label class="form-label">Target type</label>
+        <select class="form-select" name="service_type" onchange="this.form.submit()">
+          {% for option in ['email', 'telegram', 'twilio', 'webhook'] %}
+          <option value="{{ option }}" {% if option == service_type %}selected{% endif %}>{{ option }}</option>
+          {% endfor %}
+        </select>
+      </form>
+      <form method="post" action="/channels/new">
+        <div class="mb-3"><label class="form-label">Name</label><input class="form-control" name="name" required></div>
+        <div class="mb-3">
+          <label class="form-label">Service</label>
+          <select class="form-select" name="service_id">
+            {% for service in services if service.service_type == service_type %}
+            <option value="{{ service.id }}">{{ service.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        {% for key, label in target_fields %}
+        <div class="mb-3"><label class="form-label">{{ label }}</label><input class="form-control" name="{{ key }}"></div>
+        {% endfor %}
+        <div class="mb-3"><label class="form-label">Extra message text</label><textarea class="form-control" name="extra_text" rows="3"></textarea></div>
+        <button class="btn btn-primary" type="submit">Create channel</button>
+      </form>
+      {% else %}
+      <p class="muted mb-0">Create a service first.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+

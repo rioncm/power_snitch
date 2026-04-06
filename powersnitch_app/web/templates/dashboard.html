@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-end mb-4">
+  <div>
+    <h1 class="hero-title mb-1">Dashboard</h1>
+    <p class="muted mb-0">Current fleet status, active conditions, and recent alert activity.</p>
+  </div>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-md-4"><div class="panel metric-card"><div class="muted">Devices</div><div class="fs-2 fw-bold">{{ counts.devices }}</div></div></div>
+  <div class="col-md-4"><div class="panel metric-card"><div class="muted">Enabled</div><div class="fs-2 fw-bold">{{ counts.enabled_devices }}</div></div></div>
+  <div class="col-md-4"><div class="panel metric-card"><div class="muted">Failed Alerts</div><div class="fs-2 fw-bold">{{ counts.failed_alerts }}</div></div></div>
+</div>
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="panel p-4">
+      <h2 class="h5">UPS Inventory</h2>
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead><tr><th>Name</th><th>Identifier</th><th>Status</th></tr></thead>
+          <tbody>
+            {% for device in devices %}
+            <tr>
+              <td>{{ device.display_name }}</td>
+              <td><code>{{ device.identifier }}</code></td>
+              <td>{% if device.enabled %}<span class="badge text-bg-success">Enabled</span>{% else %}<span class="badge text-bg-secondary">Disabled</span>{% endif %}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="3" class="muted">No UPS devices discovered yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="panel p-4">
+      <h2 class="h5">Active Conditions</h2>
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead><tr><th>UPS</th><th>Condition</th><th>Since</th></tr></thead>
+          <tbody>
+            {% for item in active_conditions %}
+            <tr><td>{{ item.display_name }}</td><td>{{ item.condition_key }}</td><td>{{ item.active_since }}</td></tr>
+            {% else %}
+            <tr><td colspan="3" class="muted">No active conditions.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-12">
+    <div class="panel p-4">
+      <h2 class="h5">Recent Alerts</h2>
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead><tr><th>Time</th><th>UPS</th><th>Condition</th><th>Channel</th><th>Result</th></tr></thead>
+          <tbody>
+            {% for alert in alerts %}
+            <tr>
+              <td>{{ alert.occurred_at }}</td>
+              <td>{{ alert.display_name or "-" }}</td>
+              <td>{{ alert.condition_key }} / {{ alert.condition_state }}</td>
+              <td>{{ alert.channel_name or alert.target }}</td>
+              <td>{% if alert.success %}<span class="badge text-bg-success">Sent</span>{% else %}<span class="badge text-bg-danger">Failed</span>{% endif %}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="muted">No alerts logged yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

@@ -73,3 +73,21 @@ async def log_alert_event(method: str, target: str, event_type: str, success: bo
             )
         )
         await db.commit()
+
+async def get_last_alert_time(event_type: str) -> Optional[str]:
+    async with aiosqlite.connect(DB_PATH) as db:
+        async with db.execute(
+            """
+            SELECT timestamp FROM alert_log
+            WHERE event_type = ?
+            ORDER BY timestamp DESC
+            LIMIT 1
+            """,
+            (event_type,)
+        ) as cursor:
+            row = await cursor.fetchone()
+            return row[0] if row else None
+
+async def update_alert_time(event_type: str):
+    # Placeholder for future persistent alert time tracking
+    pass

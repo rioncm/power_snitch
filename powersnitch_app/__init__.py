@@ -1,0 +1,2 @@
+"""Power Snitch application package."""
+

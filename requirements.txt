@@ -1,6 +1,9 @@
 # Core runtime
 fastapi
 uvicorn
+jinja2
+itsdangerous
+python-multipart
 
 # Async I/O for webhook and SMTP
 aiohttp
@@ -18,4 +21,5 @@ python-json-logger
 
 # Testing
 pytest
+pytest-asyncio
 httpx

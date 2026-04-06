@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="panel p-4">
+      <h1 class="hero-title mb-3">Notification Services</h1>
+      <table class="table">
+        <thead><tr><th>Name</th><th>Type</th><th>Config</th></tr></thead>
+        <tbody>
+          {% for service in services %}
+          <tr><td>{{ service.name }}</td><td>{{ service.service_type }}</td><td><code>{{ service.config }}</code></td></tr>
+          {% else %}
+          <tr><td colspan="3" class="muted">No services configured.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="panel p-4">
+      <h2 class="h5">Add service</h2>
+      <form method="get" action="/services" class="mb-3">
+        <label class="form-label">Service type</label>
+        <select class="form-select" name="service_type" onchange="this.form.submit()">
+          {% for option in ['email', 'telegram', 'twilio', 'webhook'] %}
+          <option value="{{ option }}" {% if option == service_type %}selected{% endif %}>{{ option }}</option>
+          {% endfor %}
+        </select>
+      </form>
+      <form method="post" action="/services/new">
+        <input type="hidden" name="service_type" value="{{ service_type }}">
+        <div class="mb-3"><label class="form-label">Name</label><input class="form-control" name="name" required></div>
+        {% for key, label in service_fields %}
+        <div class="mb-3"><label class="form-label">{{ label }}</label><input class="form-control" name="{{ key }}"></div>
+        {% endfor %}
+        <button class="btn btn-primary" type="submit">Create service</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

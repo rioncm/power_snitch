@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="panel p-4">
+      <h1 class="hero-title mb-3">Alert Rules</h1>
+      <table class="table">
+        <thead><tr><th>UPS</th><th>Condition</th><th>Channel</th><th>Repeat</th><th>Recovery</th></tr></thead>
+        <tbody>
+          {% for rule in rules %}
+          <tr><td>{{ rule.display_name }}</td><td>{{ rule.condition_key }}</td><td>{{ rule.channel_name }}</td><td>{{ rule.repeat_interval_seconds }}s</td><td>{{ "Yes" if rule.send_recovery else "No" }}</td></tr>
+          {% else %}
+          <tr><td colspan="5" class="muted">No rules configured.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="panel p-4">
+      <h2 class="h5">Add rule</h2>
+      {% if devices and channels %}
+      <form method="post" action="/rules/new">
+        <div class="mb-3"><label class="form-label">UPS device</label><select class="form-select" name="ups_device_id">{% for device in devices %}<option value="{{ device.id }}">{{ device.display_name }}</option>{% endfor %}</select></div>
+        <div class="mb-3"><label class="form-label">Condition</label><select class="form-select" name="condition_key">{% for key in ['on_battery','on_line','low_battery','replace_battery','overload','shutdown_imminent','battery_low_pct','runtime_low','ups_communication_lost','unknown_state'] %}<option value="{{ key }}">{{ key }}</option>{% endfor %}</select></div>
+        <div class="mb-3"><label class="form-label">Channel</label><select class="form-select" name="channel_id">{% for channel in channels %}<option value="{{ channel.id }}">{{ channel.name }}</option>{% endfor %}</select></div>
+        <div class="mb-3"><label class="form-label">Repeat interval seconds</label><input class="form-control" type="number" name="repeat_interval_seconds" value="900" min="0"></div>
+        <div class="form-check mb-3"><input class="form-check-input" type="checkbox" name="send_recovery" checked><label class="form-check-label">Send recovery alert</label></div>
+        <button class="btn btn-primary" type="submit">Create rule</button>
+      </form>
+      {% else %}
+      <p class="muted mb-0">Create at least one device and channel first.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+

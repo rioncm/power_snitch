@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="hero-title mb-3">Telemetry Graphs</h1>
+{% for card in graph_cards %}
+<div class="panel p-4 mb-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h2 class="h5 mb-0">{{ card.device.display_name }}</h2>
+      <p class="muted mb-0"><code>{{ card.device.identifier }}</code></p>
+    </div>
+  </div>
+  <div class="row g-4">
+    <div class="col-md-4">
+      <div class="muted small mb-1">Battery charge</div>
+      <svg class="sparkline" viewBox="0 0 280 90">{% if card.battery_points %}<polyline points="{{ card.battery_points }}"></polyline>{% endif %}</svg>
+    </div>
+    <div class="col-md-4">
+      <div class="muted small mb-1">Runtime seconds</div>
+      <svg class="sparkline" viewBox="0 0 280 90">{% if card.runtime_points %}<polyline points="{{ card.runtime_points }}"></polyline>{% endif %}</svg>
+    </div>
+    <div class="col-md-4">
+      <div class="muted small mb-1">Load percent</div>
+      <svg class="sparkline" viewBox="0 0 280 90">{% if card.load_points %}<polyline points="{{ card.load_points }}"></polyline>{% endif %}</svg>
+    </div>
+  </div>
+</div>
+{% else %}
+<div class="panel p-4"><p class="mb-0 muted">No telemetry samples yet. Enable a device and let the monitor poll it.</p></div>
+{% endfor %}
+{% endblock %}
+

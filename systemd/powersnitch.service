@@ -1,0 +1,15 @@
+[Unit]
+Description=Power Snitch UPS monitoring appliance
+After=network.target
+
+[Service]
+Type=simple
+User=__USER__
+WorkingDirectory=__APP_DIR__
+EnvironmentFile=__APP_DIR__/runtime.env
+ExecStart=__APP_DIR__/.venv/bin/python powersnitch.py
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
