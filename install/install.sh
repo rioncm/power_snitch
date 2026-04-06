@@ -61,6 +61,7 @@ nut_is_compatible() {
 configure_nut_for_powersnitch() {
   local scanner_output=""
   local scanner_stanzas=""
+  local generated_stanzas=""
   mkdir -p "$NUT_BACKUP_DIR"
 
   backup_nut_file /etc/nut/nut.conf
@@ -70,6 +71,8 @@ configure_nut_for_powersnitch() {
   sudo tee /etc/nut/nut.conf >/dev/null <<'EOF'
 MODE=standalone
 EOF
+
+  generated_stanzas="$(generate_usb_ups_stanzas)"
 
   if command -v nut-scanner >/dev/null 2>&1; then
     scanner_output="$(nut-scanner -U 2>/dev/null || true)"
@@ -81,7 +84,10 @@ EOF
     ')"
   fi
 
-  if [ -n "$scanner_stanzas" ]; then
+  if [ -n "$generated_stanzas" ]; then
+    echo "Using USB device metadata to build /etc/nut/ups.conf"
+    printf "%s\n" "$generated_stanzas" | sudo tee /etc/nut/ups.conf >/dev/null
+  elif [ -n "$scanner_stanzas" ]; then
     echo "Using nut-scanner output to build /etc/nut/ups.conf"
     printf "%s\n" "$scanner_stanzas" | sudo tee /etc/nut/ups.conf >/dev/null
   else
@@ -101,6 +107,67 @@ EOF
   fi
   sudo systemctl restart nut-server || true
   sleep 2
+}
+
+generate_usb_ups_stanzas() {
+  if ! command -v udevadm >/dev/null 2>&1; then
+    return 0
+  fi
+
+  local output=""
+  local idx=0
+  local dev=""
+  for dev in /dev/bus/usb/*/*; do
+    [ -e "$dev" ] || continue
+
+    local properties=""
+    properties="$(udevadm info -q property -n "$dev" 2>/dev/null || true)"
+    [ -n "$properties" ] || continue
+
+    local vendor_id=""
+    local model_id=""
+    local vendor=""
+    local model=""
+    local serial=""
+
+    vendor_id="$(printf '%s\n' "$properties" | awk -F= '/^ID_VENDOR_ID=/{print $2; exit}')"
+    model_id="$(printf '%s\n' "$properties" | awk -F= '/^ID_MODEL_ID=/{print $2; exit}')"
+    vendor="$(printf '%s\n' "$properties" | awk -F= '/^ID_VENDOR=/{print $2; exit}')"
+    model="$(printf '%s\n' "$properties" | awk -F= '/^ID_MODEL=/{print $2; exit}')"
+    serial="$(printf '%s\n' "$properties" | awk -F= '/^ID_SERIAL_SHORT=/{print $2; exit}')"
+
+    if [ -z "$serial" ]; then
+      serial="$(printf '%s\n' "$properties" | awk -F= '/^ID_SERIAL=/{print $2; exit}')"
+    fi
+
+    case "${vendor_id}:${model_id}" in
+      0764:0601|051d:*|09ae:*|0665:*)
+        idx=$((idx + 1))
+        if [ -z "$vendor" ]; then
+          vendor="UPS"
+        fi
+        if [ -z "$model" ]; then
+          model="USB UPS"
+        fi
+        if [ -z "$serial" ]; then
+          serial="ups${idx}"
+        fi
+        output+=$(cat <<EOF
+[ups${idx}]
+    driver = usbhid-ups
+    port = auto
+    vendorid = ${vendor_id}
+    productid = ${model_id}
+    serial = ${serial}
+    desc = "${vendor} ${model}"
+
+EOF
+)
+        ;;
+    esac
+  done
+
+  printf "%s" "$output"
 }
 
 print_nut_requirements() {
