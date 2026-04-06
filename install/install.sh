@@ -47,6 +47,8 @@ tar \
 
 sudo chown -R "$INSTALL_USER":"$INSTALL_GROUP" "$APP_DIR"
 
+cd "$APP_DIR"
+
 if [ ! -d "$VENV_DIR" ]; then
   python3 -m venv "$VENV_DIR"
 fi
