@@ -241,6 +241,13 @@ POWERSNITCH_SESSION_SECRET=$SESSION_SECRET
 POWERSNITCH_STARTUP_DISCOVERY=true
 EOF
 
+set -a
+. "$ENV_FILE"
+set +a
+
+echo "Bootstrapping Power Snitch database and admin credentials..."
+"$VENV_DIR/bin/python" -m powersnitch_app.bootstrap
+
 if nut_is_compatible; then
   echo "Existing NUT configuration looks compatible with Power Snitch."
 else
@@ -269,7 +276,7 @@ sudo systemctl enable powersnitch.service
 
 echo
 echo "Power Snitch is installed."
-echo "Initial admin password will be written on first start to:"
+echo "Initial admin password is stored at:"
 echo "  $DATA_DIR/initial_admin_password.txt"
 echo
 echo "Next steps:"

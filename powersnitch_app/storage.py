@@ -166,7 +166,7 @@ class Database:
     async def _seed_settings(self, db: aiosqlite.Connection) -> None:
         now = utcnow()
         defaults = {
-            "bind_mode": "localhost",
+            "bind_mode": "lan",
             "bootstrap_complete": "1",
             "graphs_backend": "sqlite",
         }
