@@ -17,12 +17,12 @@
       <h2 class="h5">UPS Inventory</h2>
       <div class="table-responsive">
         <table class="table align-middle">
-          <thead><tr><th>Name</th><th>Identifier</th><th>Status</th></tr></thead>
+          <thead><tr><th>Name</th><th>Reference</th><th>Status</th></tr></thead>
           <tbody>
             {% for device in devices %}
             <tr>
               <td>{{ device.display_name }}</td>
-              <td><code>{{ device.identifier }}</code></td>
+              <td><code>{{ device.reference_identifier }}</code></td>
               <td>{% if device.enabled %}<span class="badge text-bg-success">Enabled</span>{% else %}<span class="badge text-bg-secondary">Disabled</span>{% endif %}</td>
             </tr>
             {% else %}
@@ -75,4 +75,3 @@
   </div>
 </div>
 {% endblock %}
-

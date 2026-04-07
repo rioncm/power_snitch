@@ -242,7 +242,6 @@ def create_app(settings: Settings) -> FastAPI:
         request: Request,
         device_id: int,
         display_name: str = Form(...),
-        enabled: str | None = Form(None),
         poll_interval_seconds: int = Form(...),
         battery_low_pct_threshold: float = Form(...),
         runtime_low_threshold_seconds: float = Form(...),
@@ -253,11 +252,21 @@ def create_app(settings: Settings) -> FastAPI:
         await repository.update_device_settings(
             device_id,
             display_name,
-            enabled == "on",
+            bool(device["enabled"]) if device else False,
             poll_interval_seconds,
             battery_low_pct_threshold,
             runtime_low_threshold_seconds,
         )
+        return redirect("/devices")
+
+    @app.post("/devices/{device_id}/toggle")
+    async def toggle_device(request: Request, device_id: int):
+        protected = guard(request)
+        if protected:
+            return protected
+        device = await repository.get_device(device_id)
+        if device:
+            await repository.set_device_enabled(device_id, not bool(device["enabled"]))
         return redirect("/devices")
 
     @app.get("/services")

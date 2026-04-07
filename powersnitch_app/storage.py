@@ -138,6 +138,15 @@ class Repository:
             device.updated_at = utcnow()
             await session.commit()
 
+    async def set_device_enabled(self, device_id: int, enabled: bool) -> None:
+        async with self.db.session() as session:
+            device = await session.get(UPSDevice, device_id)
+            if not device:
+                return
+            device.enabled = enabled
+            device.updated_at = utcnow()
+            await session.commit()
+
     async def save_snapshot(self, device_id: int, snapshot: DeviceSnapshot) -> None:
         async with self.db.session() as session:
             device = await session.get(UPSDevice, device_id)
@@ -439,9 +448,11 @@ class Repository:
         }
 
     def _device_to_dict(self, row: UPSDevice) -> dict[str, Any]:
+        reference_identifier = row.serial or row.identifier
         return {
             "id": row.id,
             "identifier": row.identifier,
+            "reference_identifier": reference_identifier,
             "display_name": row.display_name,
             "enabled": row.enabled,
             "poll_interval_seconds": row.poll_interval_seconds,

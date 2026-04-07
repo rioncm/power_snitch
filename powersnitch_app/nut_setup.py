@@ -5,7 +5,7 @@ import shutil
 import subprocess
 import sys
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 
 
@@ -120,7 +120,7 @@ def backup_file(path: Path, backup_dir: Path) -> None:
     if not path.exists():
         return
     backup_dir.mkdir(parents=True, exist_ok=True)
-    stamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
+    stamp = datetime.now(UTC).strftime("%Y%m%d%H%M%S")
     shutil.copy2(path, backup_dir / f"{path.name}.{stamp}.bak")
 
 
